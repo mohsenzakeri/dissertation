@@ -1,0 +1,80 @@
+%Abstract Page
+
+\hbox{\ }
+
+\renewcommand{\baselinestretch}{1}
+\small \normalsize
+
+\begin{center}
+\large{{ABSTRACT}}
+
+\vspace{3em}
+
+\end{center}
+\hspace{-.15in}
+\begin{tabular}{ll}
+Title of Dissertation:    & {\large  OPTIMIZING THE ACCURACY OF }\\
+&                     {\large  LIGHTWEIGHT METHODS FOR SHORT READ} \\
+&                     {\large  ALIGNMENT AND QUANTIFICATION} \\
+\ \\
+&                          {\large  Mohsen Zakeri} \\
+&                           {\large Doctor of Philosophy, 2021} \\
+\ \\
+Dissertation Directed by: & {\large  Professor Rob Patro} \\
+&               {\large  Department of Physics } \\
+\end{tabular}
+
+\vspace{3em}
+
+\renewcommand{\baselinestretch}{2}
+\large \normalsize
+
+The analysis of the high throughput sequencing (HTS) data includes 
+a number of involved computational steps, ranging from the assembly 
+of the reference sequences, mapping or alignment of the reads to 
+existing or assembled sequences, estimating the abundance of 
+sequenced molecules, performing differential or comparative 
+analysis between samples, and even inferring dynamics of interest 
+from snapshot data. Many methods have been developed for these 
+different tasks that provide different trade-offs in terms of 
+accuracy and speed, because precision typically comes at the 
+expense of sacrificing speed and vice versa. Throughout this 
+work, I review different aspects of the available methods for 
+alignment and quantification steps of RNA-seq data. Furthermore, 
+I explore finding a reasonable balance between these competing 
+goals to introduce methods which are designed to be almost as 
+good as the most accurate approaches, while being as fast as the 
+methods that focus on speed.
+
+Alignment or mapping of the sequencing reads to the known reference 
+sequences is a challenging computational step in the pipeline because 
+of the large size of sample data. A typical RNA-seq sample often consists 
+of 10s of millions of paired-end reads which should be queried against the 
+large number of reference sequences to find the most similar reference substrings 
+under some notion of edit distance. Therefore, the aligners index the reference 
+sequences to accelerate the search procedure. Furthermore, recent quantification 
+methods, introduced the concept of lightweight alignment in order to accelerate 
+the mapping step, and therefore, the whole quantification pipeline. I collabrated 
+with my colleagues to explore some of the shortcomings of the lightweight alignments, 
+and to try to address those with a new approach called the selective alignment. 
+Moreover, we introduce a new aligner, Puffaligner, which benefits from the indexing 
+approach introduced by the Pufferfish index and also the idea of selective-alignment 
+to produce accurate alignments in a short time compared to other popular aligners.
+
+I have also explored the shortcomings of the approximate generative model used in the 
+fast RNA-seq quantifiers. In these methods, fragments (reads) are grouped together 
+into equivalence classes which are sets of sequenced fragments for which all the 
+fragments are compatible with a specific set of reference sequences. Therefore, in 
+the approximate models, all the fragments in each group are treated as identical, 
+which factorizes the likelihood function being optimized and increases the speed of 
+the optimization step. I have explored how this factorization affects the accuracy of 
+abundance estimates, and propose a new factorization approach for approximating the 
+likelihood which demonstrates higher fidelity to the exact model.
+
+%Finally, I propose the possible path forward for increasing the accuracy of 
+%abundance estimation tools in the cases where there are anomalies in transcript 
+%coverages which could lead to the detection of unannoated transcripts. Also, 
+%I will investigate if representing single cell expression matrices in terms of 
+%equivalence classes, rather than the gene counts, increases the accuracy or 
+%robustness of the downstream analysis of the single cell pipelines, such as 
+%dimensionality reduction and cell clustering.
