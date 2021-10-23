@@ -159,6 +159,17 @@
 \newcommand{\unitigs}{unitigs\xspace}
 \newcommand{\uni}{Uni\xspace}
 
+\newcommand{\eqc}{equivalent class\xspace}
+\newcommand{\eqcs}{equivalent classes\xspace}
+\newcommand{\gib}{Gibbs\xspace}
+\newcommand{\gibbs}{Gibbs sampling\xspace}
+\newcommand{\boots}{Bootstrap sampling\xspace}
+\newcommand{\boot}{Bootstrap\xspace}
+\newcommand{\pboot}{positional Bootstrap\xspace}
+\newcommand{\pboots}{positional Bootstrap sampling\xspace}
+\newcommand{\mle}{maximum likelihood estimation\xspace}
+\newcommand{\mles}{maximum likelihood estimations\xspace}
+
 \newcommand{\gene}[1]{\texttt{#1}\xspace}
 \newcommand{\tup}[2]{\ensuremath{\langle #1, \txp{#2} \rangle}}
 
