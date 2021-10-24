@@ -746,3 +746,13 @@ estimator. It works by resampling (with replacement) from the observed data, and
 these as population samples. The procedure has been used in many contexts for non-parametric 
 estimation. In RNA-seq, Computing the abundance estimation of all \boot sample leads to a 
 estimating a posterior distribution for the abundances. 
+
+% talk about the current methods available for estimating the posterior
+RNA-seq quantification tools~(\cite{kallisto,salmon} have implemented the regular bootstrap 
+sampling by resampling the \eqc counts. \eqcs are a summerized representations of the reads, 
+therefore, sampling the \eqc counts instead of each individual read improves the efficiency 
+of the \boots. \pboots is also another way of generating \boot samples by sampling the 
+positions where the reads map to on each transcript~\cite{xiong2016probabilistic}.
+Furthermore, the RNA-seq quantification tool, Salmon~\cite{salmon} also includes a \gibbs
+procedure for estimating the posterior distribution.  Bitseq~\cite{glaus2012identifying} 
+applies a MCMC \gib sampler to generate samples from the posterior probabilty distribution. 
