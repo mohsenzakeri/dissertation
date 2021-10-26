@@ -8,7 +8,7 @@
 Throughout this dissertation, we have explored improving the lightweight approaches
 employed in various steps of the RNA-seq analysis pipeline, i.e., mapping or alignment
 of the reads to a known reference, estimating the abundance of transcripts, and 
-assesing the accuracy of the point estimates by estimating the posterior distribution.
+assessing the accuracy of the point estimates by estimating the posterior distribution.
 The recurring theme of all the methods we have introduced here is improving the accuracy
 of lightweight methods by maintaining their efficiency.
 
@@ -16,7 +16,7 @@ In~\cref{chapt2}, we introduced selective-alignment as a new algorithm for effic
 aligning the reads to the reference transcriptome. This approach increases both sensitivity
 and specificity of quasi-mapping. Selective-alignment increases the sensitivity by performing
 safe skips for querying each \kmer in the reference. It also relaxes other constraints
-imposed on merging the mappings discovered for a read. It also introduces the concept of 
+imposed on merging the mappings discovered for a read. It also introduces the concept of
 co-mapping for further refining the candidate mappings. Selective-alignment also computes
 an alignment score for each mapping to further filter spurious hits. The alignment-score
 could be also used in the quantification step to improve the accuracy of the estimations.
@@ -25,30 +25,30 @@ methods without sacrificing the performance.
 
 Furthermore, we have introduced \puffaligner in~\cref{chapt2}. \puffaligner is built on top
 of the \pufferfish index which is an efficient \ccdbg base index of a collection of reference
-sequences. \puffaligner is multi-purpose aligner which can be utilized for aligning DNA-seq, 
-RNA-seq, and metagenomic reads. \puffaligner finds high quality alignments for short reads 
+sequences. \puffaligner is a multi-purpose aligner that can be utilized for aligning DNA-seq, 
+RNA-seq, and metagenomic reads. \puffaligner finds high-quality alignments for short reads 
 which are similar to the ones discovered by accurate tools, e.g., \bt, in a much shorter amount
 of time.
 
 We have investigated the effect of the factorization of the likelihood employed
-by lightweight RNA-seq quantification tools on the accuracy of the estimatations. These tools
+by lightweight RNA-seq quantification tools on the accuracy of the estimations. These tools
 treat all the fragments (reads) which are mapped to the same set of reference sequences as identical,
 and represent all the fragments compatible with the same set of transcripts as one equivalence
 class in the likelihood function. 
 This factorization approximates the likelihood function because of the differences in the 
-characteristics of each fragment in a equivalence class, e.g., different fragment length
-and alignment compatibilities leads to different conditional probabilities.
+characteristics of each fragment in an equivalence class, e.g., different fragment length
+and alignment compatibilities lead to different conditional probabilities.
 I have proposed an improved factorization in ~\cref{chapt3} which groups the fragments
-in an equivalence class that are not only similar in terms of the set of transcripts by which
+in an equivalence class that is not only similar in terms of the set of transcripts by which
 they are compatible, but also similar in terms of the conditional probabilities to those
 set of transcripts. We observed that this improved factorization leads to improved accuracy of 
 the abundance estimation with almost no effect on the speed of the lightweight methods.
 
 In~\cref{chapt5}, we have tackled the problem of estimating the posterior distribution for
-RNA-seq abundance estimatations. The posterior distribution is necessary to assess the accuracy
+RNA-seq abundance estimations. The posterior distribution is necessary to assess the accuracy
 of the quantification results. \boots is a popular approach for creating the inferential replicates
 from the original observed sample. However, the existing \boot approaches only consider the observed
-set of the reads (equivlance classes) for generating the inferential replicates. we introduced the 
+set of the reads (equivalence classes) for generating the inferential replicates. we introduced the 
 concept of \aboots which augments the original sample with additional observations. We illustrated 
 how augmenting the \boot samples with reads uniquely mapping to each possible transcript, i.e., the 
 set of transcripts with at least one aligned read from the observed sample, improves the uncertainty
@@ -57,38 +57,38 @@ estimation.
 \subsection{Future Work}
 
 Most RNA-seq quantification tools rely on the generative model proposed by~\cite{Li2010RSEM} about
-which we have discussed in details throughout this Dissertation. A shortcoming of this model is that
-it assumes the set of reference sequences againts which we are quantifying is complete and all the 
-fragments in the sample come from one of transcripts in the reference. RSEM~\cite{Li2010RSEM} tries to 
-address this issue by inclduing an extra transcript as the noise transcript to which all the fragments
+which we have discussed in detail throughout this Dissertation. A shortcoming of this model is that
+it assumes the set of reference sequences against which we are quantifying is complete and all the 
+fragments in the sample come from one of the transcripts in the reference. RSEM~\cite{Li2010RSEM} tries to 
+address this issue by including an extra transcript as the noise transcript to which all the fragments
 not aligned to any other transcripts map. However, based on how the reference transcripts
-are created by alternative splicing there might exist a fragment which is completely compatible with
-an existing transcript in the reference sequence but it comes from a transcript missed in the our
+are created by alternative splicing there might exist a fragment that is completely compatible with
+an existing transcript in the reference sequence but it comes from a transcript missed in our
 reference transcriptome. This might happen because the exon that the fragment comes from is present
-in one of existing transripts. Such fragments possibly lead to coverage anomalies of the transcripts
+in one of the existing transcripts. Such fragments possibly lead to coverage anomalies of the transcripts
 present in the reference which is completely ignored by the generative model of RNA-seq quantification.
 
-Recently, different post quantification analysis have been proposed to detect and possibly fix such
+Recently, different post quantification analyses have been proposed to detect and possibly fix such
 coverage anomalies. E.g., In a recent paper~\cite{ma2019detecting}, the authors develop a method for 
 detecting anomalies in the coverages of transcripts in the RNA-seq quantification results. As they state, 
 such anomalies could be evidence of misquantification of transcripts. They try to resolve the anomalies by 
 moving around reads between transcripts which they map to, in a way that results in less expression anomalies 
 while still maintaining a high likelihood. This study also suggests that the cases where the anomalies could 
-not be resolved by simply transferring reads between the existing transcripts, could indicate some mis-annotated 
+not be resolved by simply transferring reads between the existing transcripts could indicate some mis-annotated 
 transcripts in the reference transcriptome.
 
 % TODO
 % Furthermore, the JCC paper.
 
-We believe this issue could be addressed more properly during the qunatification step rather than post 
-analyis of the abundance estimations.
+We believe this issue could be addressed more properly during the quantification step rather than post 
+analysis of the abundance estimations.
 % proposal to tackle this problem is to detect the transcripts which have significant coverage anomalies, 
 % then, attempt re-distributing the reads assigned to those transcripts to other compatible transcripts in a way 
 % that reduces the overall coverages anomalies. 
 It is possible to detect coverage anomalies during both the online 
 and offline phases of the quantification procedure. During the online phase, reads are assigned only once, 
 therefore, scanning all the transcripts once at the end of the online phase could highlight the anomalies. However, 
-the reads are re distributed during each iteration of the offline EM. Therefore, keeping track of the anomalies 
+the reads are redistributed during each iteration of the offline EM. Therefore, keeping track of the anomalies 
 in that case is more challenging. Another challenge is that the mapping positions are not available in this phase 
 in the current implementation of offline EM. One possible solution is keeping track of mapping positions by 
 increasing the resolution of the equivalence classes. In addition to these challenges, some anomalies will 
@@ -96,3 +96,4 @@ never be resolved by re-distributing the reads, probably because the reads are n
 the sequences in the reference set. This highlights the existence of novel isoforms which are missing from 
 the set of known reference sequences. Therefore, the next step in this would be detecting such cases and 
 reporting possible existing transcripts in the reference at the end of the quantification procedure.
+
