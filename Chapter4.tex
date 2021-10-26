@@ -4,13 +4,13 @@
 
 \chapter[Improving the Posterior Estimates]{Estimating the posterior with an improved 
 version of bootstrap sampling based on Equivalence Classes} 
-\label{chapt:boots}
+\label{chapt4}
 
 \section{Overview}
 % talk about bayesian bootstraps
 Rubin \cite{rubin1981bayesian} introduced the Bayesian Bootstrap procedure, which generalizes 
 the bootstrap and introduces a procedure for placing a prior over the sampling weights used in 
-bootstrap resampling. The classic bootstrap is the posterior mean of the bayesian bootstrap, and 
+bootstrap resampling. The classic bootstrap is the posterior mean of the Bayesian bootstrap, and 
 Rubin demonstrated they have quite similar estimation properties, generality, and similar 
 limitations.
 
@@ -28,7 +28,7 @@ the inference procedure or the estimator being computed.
 % talk about how we wanna estimate the bayesian bootstraps
 Here, we introduce the notion of the Augmented Bootstrap. This procedure follows the general 
 framework of the bootstrap (or, optionally, the Bayesian Bootstrap), but augments the observed 
-data with additional “pseduo-observations” that represent values that are possible given a 
+data with additional ``pseudo-observations'' that represent values that are possible given a 
 conceptual model for data generation, but which were not observed in the sample.
 
 \section{Methods}
@@ -36,7 +36,7 @@ conceptual model for data generation, but which were not observed in the sample.
 We will explain this idea in the underlying context of the problem of quantifying the abundance 
 of transcripts from RNA-sequencing (RNA-seq) data.  In this problem, we observe a collection of 
 sequenced fragments, from which we can then estimate the abundance of the distinct transcripts 
-using an expectation maximization procedure (our "estimator" in the case of the bootstrap).  
+using an expectation-maximization procedure (our "estimator" in the case of the bootstrap).  
 Consider that we observe a collection $\mathcal{F}$ of $N$ sequenced fragments. Each fragment aligns 
 to a set of distinct locations which we denote as $a(f_i) = \{(j_1, k_1), (j_2, k_2), \dots\}$ 
 signifying that fragment $f_i$ aligns to transcript $j_1$ at position $k_1$, to transcript $j_2$ 
@@ -51,8 +51,8 @@ where $P(t_j|\mathbf{\eta})$ is the probability of selecting transcript $j$ for 
 conditional on the transcript abundances and $P(f_i|t_{j,k}=1)$ is the probability of generating 
 fragment $i$ from transcript $j$ at position $k$.
 
-\textcolor{red}{is there a way to put $k$ on the left side of the conditional bar? it seems funny on the 
-right side in the second term}
+% \textcolor{red}{is there a way to put $k$ on the left side of the conditional bar? it seems funny on the 
+% right side in the second term}
 
 While there is no closed-form solution to determine the $\mathbf{\eta}$ that maximize $\mathcal{L}$, 
 we can, at least locally, optimize this quantity using an EM algorithm.  We are then interested in 
@@ -83,7 +83,7 @@ Specifically, with no prior information on whether one of these alleles is \text
 than the other, we have no information about how the $N_t$ fragments should be allocated among 
 these transcripts.  Perhaps $t_p$ and $t_m$ each give rise to $\frac{N_t}{2}$ fragments (what the 
 EM will likely tell us), or perhaps $t_p$ gives rise to 0 fragments and $t_m$ gives rise to all 
-$N_t$ fragments.  In fact, any combintation between the two alleles that sums to $N_t$ is feasible 
+$N_t$ fragments.  In fact, any combination between the two alleles that sums to $N_t$ is feasible 
 and has equal likelihood.
 
 The crux of the issue in uncovering this uncertainty using the non-parametric bootstrap (either the 
@@ -105,7 +105,7 @@ expedient in our use case.
 The main idea behind the augmented bootstrap is that we will augment our observed data with some set 
 of "pseudo-observations" --- data values that \textit{might} have been observed, but which were not observed 
 in our sample.  This is analogous to placing a prior over the discrete set of possible observations 
-that may be made. The prior may be informative or noninformative, and this can represented by means 
+that may be made. The prior may be informative or noninformative, and this can be represented by means 
 of the sampling weights assigned to each of these pseudo-observations.
 
 Let us consider our chosen problem of transcript abundance from RNA sequencing data. To simplify the 
@@ -171,7 +171,7 @@ observed.  The cost for this, of course, is that we must make some decision abou
 
 \subsection{Heuristics for augmenting the bootstrap}
 
-We have defined the augmented bootsrap procedure as augmenting the observed sample with 
+We have defined the augmented bootstrap procedure as augmenting the observed sample with 
 pseudo-observations for \textit{all possible} observations. This can immediately pose some challenges. 
 First, it requires that the set of possible observations is finite and sufficiently small to be 
 enumerated. Second, many possible pseudo-observations, though technically possible given the 
@@ -201,45 +201,147 @@ highly-ambiguous components within the inference problem. Thus, we are, in effec
 smaller set of pseudo-observations that are more likely to uncover the relevant uncertainty 
 in our estimator.
 
-\textcolor{red}{talk about just sampling from the single-transcript equivalence classes — that is, 
-we can take this idea one step further by, instead of generating pseudo-observations only from 
-$\mathcal{T}_\mathcal{F}$, only generating those \textit{specific} pseudo-observations from along 
-the transcripts in $\mathcal{T}_\mathcal{F}$ that are unique to each transcript.}
+%\textcolor{red}{talk about just sampling from the single-transcript equivalence classes — that is, 
+%While 
+%We can take this idea one step further by, instead of generating pseudo-observations only from 
+%$\mathcal{T}_\mathcal{F}$, only generating those \textit{specific} pseudo-observations from along 
+%the transcripts in $\mathcal{T}_\mathcal{F}$ that are unique to each transcript.
 
 
 
 \section{Results}
 
-\subsection{Estimating the allelic expression}
-We have created a simulated dataset of Drosophila with expression of the reads from two alleles of 
+We have created a simulated dataset of Drosophila with an expression of the reads from two alleles of 
 each gene. To create the allelic reads, we flip a random base in the original genes and then generate
 reads with Polyester RNA-seq simulator\cite{frazee2015polyester} from both allelic genes. Based on the 
 procedure for generating the allelic reads, most, if not all, the reads mapping to a transcript, map 
-to both its paternal and maternal alleles.
+to both its paternal and maternal alleles. We demonstrate how the \aboot improves the accuracy of abundance
+estimation on a sample with high levels of ambiguity.
 
-First of all, we demonstrate how the regular \boots fails to capture the entire posterior distributions
+\subsection{Estimating the allelic expression of a simulated sample}
+
+% TODO
+% talk about the simulation process
+To investigate how the posterior sampling could improve the accuracy of the abundance estimation, we follow 
+a specific procedure for creating the multi-allelic RNA-seq sample from the Drosophila genome. %The simulation 
+We assume the original genome is one parental allele, and generate the second allele by
+adding a random mutation to 5 exons of each gene.
+
+To increase the uncertainty in the abundance estimations, we simulate reads from both alleles of every
+transcript in the reference transcriptome. Each transcript in the paternal allele is expressed by 
+two reads. Then we select 1000 transcripts from each gene with 3 to 6 isoforms and alter the 
+expression of the maternal allele of the transcript randomly in a way that the final gene count of the 
+maternal allele will have the same expression level as the paternal allele.
+
+
+We should acknowledge that the way this data is simulated is unrealistic because each transcript has
+multiple alleles in the sample and all the transcripts are expressed. The reason, we follow the procedure
+is to include a very high level of uncertainty so that estimating the posterior distribution becomes
+more challenging.
+
+First of all, we demonstrate how the regular \boots fail to capture the entire posterior distributions
 for many \txps in this sample. We create inferential replicates by \boots available in \salmon and 
 \kallisto. We also create \boot samples using the \aboots with different weights. We \salmon in two
-different optimization modes of `EM' and `VBEM'. The `EM' mode is the regular expected maximization 
-algorithm and the `VBEM' is a variational bayesian version of the EM with a non-zero priors for the 
+different optimization modes of `EM' and `VBEM'. The `EM' mode is the regularly expected maximization 
+algorithm and the `VBEM' is a variational bayesian version of the EM with non-zero priors for the 
 model's parameters which induces further sparsity on the final solution.
 
+
 \begin{table} \centering
-    \begin{tabular}{lrrrr}
+    \begin{tabular}{lr}
     \toprule
-    {}  & Spearman-all & MARD-all  & MARD-subset & Spearman-subset \\
+    Method  & Spearman-all  \\
     \midrule
-    \kallisto & \num{0.9393075} & \num{0} & \num{0} & \num{0} \\
-    \kallisto \boot & \num{0.942153293871728} & \num{0} & \num{0} & \num{0} \\
-    \salmon EM point-estimates & \num{0.9537012} & \num{0.} & \num{0.} & \num{0.} \\
-    \salmon VBEM point-estimates & \num{0.7967372} & \num{0} & \num{0.} & \num{0.} \\
-    \salmon EM \boot & \num{0.986101} & \num{0} & \num{0.}  & \num{0.} \\
-    \salmon VBEM \boot  & \num{0.9010147} & \num{0} & \num{0.}  & \num{0.} \\
-    \salmon VBEM \aboot (w=0.005) & \num{0.977737} & \num{0.} & \num{0.} & \num{0.} \\
-    \salmon VBEM \aboot (w=0.01) & \num{0.9852121} & \num{0.} & \num{0} & \num{0.} \\
-    \salmon VBEM \aboot (w=0.1) & \num{0.9924701} & \num{0.} & \num{0} & \num{0.} \\
+    \kallisto & \num{0.9393075}  \\
+    \kallisto \boot & \num{0.942153293871728}\\
+
+    \salmon EM point-estimates & \num{0.9537012}  \\
+    \salmon VBEM point-estimates & \num{0.7967372}   \\
+
+    \salmon VBEM regular \boot  & \num{0.9010147} \\
+    %\salmon VBEM \aboot (w=0.005) & \num{0.977737}  & \num{0.} \\
+    \salmon VBEM \aboot (w=0.01) & \num{0.9852121} \\
+    \salmon VBEM \aboot (w=0.1) & \num{0.9924701}  \\
+    
+    \salmon EM regular \boot  & \num{0.9561436}  \\
+    %\salmon VBEM \aboot (w=0.005) & \num{0.}  & \num{0.} \\
+    \salmon EM \aboot (w=0.01) & \num{0.986101}  \\
+    \salmon EM \aboot (w=0.1) & \num{0.9924477} \\
     \bottomrule
     \end{tabular}
-    \captionof{table}[Quantification of allelic transcriptome]{}
+    \captionof{table}[Quantification of allelic transcriptome]{
+        Accuracy of abundance estimation based on the Spearman correlation.
+        Using the mean of the posterior distribution generated by
+        \aboots with weight 0.01 and 0.1 significantly improves the 
+        accuracy in the allelic expression quantification with RNA-seq.
+    }
     \label{tab:allele}
 \end{table}
+
+
+\Cref{tab:allele} shows the performance of allelic expression quantification with both point estimates
+and the mean of the posterior distributions. We observe that using the \aboots with both 0.01 and 0.1
+weights increase the accuracy of the abundance estimation. This suggests that augmenting the sample with
+one unique read for each possible transcript increases the ability of the uncertainty estimation with \boots.
+
+We also evaluated the performance of the two optimization 
+methods `EM' and `VBEM'. Because of the sparsity imposed by `VBEM' and the specific characteristics
+of the simulated sample that almost all the transcripts are expressed, the point estimates calculated
+by `VBEM' become less correlated with the truth. However, we observe that using the mean of the 
+posterior distribution, both `EM' and `VBEM' reach a very high correlation with the truth.
+
+
+To further investigate the effect of the \aboots for recovering the posterior distribution,
+we evaluated the confidence intervals calculated based on both regular \boots and \aboots.
+In this analysis, we look at confidence intervals with different lengths (0 to $100\%$) and at 
+each level we calculate how many times the truth is found in that interval. 
+%A good estimation of the posterior distribution should be able to recover the truth as many
+If we have the true posterior distribution, the truth should be found in each interval 
+relative to the length of the interval, e.g., if we are looking at the $95\%$ confidence interval,
+we should be able to find the true value of the abundance at least $95\%$ of the time.
+
+\Cref{tab:cnfint} shows the percentage of the transcripts at each level for which the truth
+is recovered in the corresponding interval. We observe that either optimization method
+using a pseudo-observation with $1\%$ weight improves the accuracy of the confidence intervals.
+The highest accuracy is achieved by the $95\%$ confidence interval of the \aboots with $w=1\%$.
+As we observed earlier, increasing the pseudo-observation weight to $10\%$ increased the spearman
+correlation of the mean with the truth, however, in this evaluation we observe that sampling too
+many reads from the pseudo-observation do not lead to a better posterior distribution.
+
+
+\begin{table} \centering
+    \begin{tabular}{lrrrrr}
+    \toprule
+    Confidence interval length  & $5\%$ & $25\%$ & $50\%$ & $75\%$ & $95\%$ \\
+    \midrule
+
+    \salmon VBEM regular \boot  & \num{0.06384082 } & \num{0.2959801 } & \num{0.5404584} & \num{0.7455006 }& \num{0.888185 }\\
+    \salmon VBEM \aboot (w=0.01) & \num{0.06804504 } & \num{0.3315576 } & \num{0.6126213 } & \num{0.8204567 }& \num{0.9416736}\\
+    \salmon VBEM \aboot (w=0.1) & \num{0.02794655}  & \num{0.1451176} & \num{0.2990612} & \num{0.4785613}& \num{0.6842802}\\
+    
+    \salmon EM regular \boot  & \num{0.06063006 }  & \num{0.2872837} & \num{0.5227345 } & \num{0.7248395 }& \num{0.8755003 }\\
+    \salmon EM \aboot (w=0.01) & \num{0.06768509} & \num{0.3264031 } & \num{0.6076252 } & \num{0.8184122 }& \num{0.9405074 } \\
+    \salmon EM \aboot (w=0.1) & \num{0.0283497} & \num{0.1466438} & \num{0.30256} & \num{0.4803611}& \num{0.6863392}\\
+    \bottomrule
+    \end{tabular}
+    \captionof{table}[Evaluating the confidence intervals for the allelic expressoins]{
+     Evaluating the confidence intervals achieved by each \boots method.
+     Augmenting the bootstrap samples with `0.01' of unique reads increases the accuracy
+     of each interval considerably.
+    }
+    \label{tab:cnfint}
+\end{table}
+
+\section{Discussion}
+
+We demonstrated that following a Bayesian approach to augment the \boots for generating
+inferential replicates increase the reliability of the posterior distribution.
+Our approach selects all the possible transcripts in a sample based on the existence of at least
+one read aligning to a transcript. We augment the set of observed
+reads with an extra unique read per possible transcript. Then, the pseudo-observations will be
+sampled in each \boot sample based on a weight that is typically much smaller than the weight that
+observed reads are sampled from. 
+In the allelic expression experiment, we observed that having $1\%$
+of the reads coming from the added set impros the accuracy of the posterior distribution.
+
+% talk about different ways for augmenting the observations

@@ -21,7 +21,7 @@ Title of Dissertation:    & {\large  OPTIMIZING THE ACCURACY OF }\\
 &                           {\large Doctor of Philosophy, 2021} \\
 \ \\
 Dissertation Directed by: & {\large  Professor Rob Patro} \\
-&               {\large  Department of Physics } \\
+&               {\large  Department of Computer Science } \\
 \end{tabular}
 
 \vspace{3em}
@@ -30,8 +30,8 @@ Dissertation Directed by: & {\large  Professor Rob Patro} \\
 \large \normalsize
 
 The analysis of the high throughput sequencing (HTS) data includes a number 
-of involved computational steps, ranging from the assembly of reference 
-sequences, mapping or alignment of the reads to existing or assembled 
+of involved computational steps, ranging from the assembly of transcriptome, 
+mapping or alignment of the reads to existing or assembled 
 sequences, estimating the abundance of sequenced molecules, performing 
 differential or comparative analysis between samples, and even inferring 
 dynamics of interest from snapshot data. Many methods have been developed 
@@ -43,23 +43,23 @@ different aspects of the available methods for these problems. I explore
 finding a reasonable balance between these competing goals, and introduce 
 methods that provide accurate results without sacrificing speed.
 
-Alignment or mapping of sequencing reads to known reference sequences is 
+Alignment of sequencing reads to known reference sequences is 
 a challenging computational step in the RNA-seq pipeline mainly because of 
 the large size of sample data and reference sequences, and highly-repetitive 
-sequence. Recent quantification methods introduced the concept of lightweight 
-alignment in order to accelerate the mapping step, and therefore, the whole 
-quantification pipeline. I collaborated with my colleagues to explore some 
+sequence. Recently, the concept of lightweight alignment
+is introduced to accelerate the mapping step of abundance estimation. 
+I collaborated with my colleagues to explore some 
 of the shortcomings of the lightweight alignment methods, and to address 
 those with a new approach called the selective-alignment. Moreover, we 
 introduce an aligner, Puffaligner, which benefits from both the indexing 
 approach introduced by the Pufferfish index and also selective-alignment 
-to producing accurate alignments in a short amount of time compared to other 
+to produce accurate alignments in a short amount of time compared to other 
 popular aligners.
 
 To improve the speed of RNA-seq quantification given a collection of alignments, 
 some tools group fragments (reads) into equivalence classes which are sets of 
-fragments that  are compatible with the same subset reference sequences. 
-Summarizing the fragments into equivalence classes  factorizes the likelihood 
+fragments that  are compatible with the same subset of reference sequences. 
+Summarizing the fragments into equivalence classes factorizes the likelihood 
 function being optimized and increases the speed of the typical optimization 
 algorithms deployed. I explore how this factorization affects the accuracy of 
 abundance estimates, and propose a new factorization approach which demonstrates 

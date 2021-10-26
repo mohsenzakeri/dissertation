@@ -177,18 +177,21 @@
 
 \newcommand{\ubold}{\fontseries{b}\selectfont}% <-- for bold fonts
 
-\newcommand\diag[4]{%
- \multicolumn{1}{p{#2}|}{\hskip-\tabcolsep
-  $\vcenter{\begin{tikzpicture}[baseline=0,anchor=south west,inner sep=#1]
-  \path[use as bounding box] (0,0) rectangle (#2+2\tabcolsep,\baselineskip);
-  \node[minimum width={#2+2\tabcolsep-\pgflinewidth},
-        minimum  height=\baselineskip+\extrarowheight-\pgflinewidth] (box) {};
-  \draw[line cap=round] (box.north west) -- (box.south east);
-  \node[anchor=south west] at (box.south west) {#3};
-  \node[anchor=north east] at (box.north east) {#4};
- \end{tikzpicture}}$\hskip-\tabcolsep
- }
-}
+% \newcommand\diag[4]{%
+%  \multicolumn{1}{p{#2}|}{\hskip-\tabcolsep
+%   $\vcenter{
+%     \begin{tikzpicture}[baseline=0,anchor=south west,inner sep=#1]
+%       \path[use as bounding box] (0,0) rectangle (#2+2\tabcolsep,\baselineskip);
+%       \node[minimum width={#2+2\tabcolsep-\pgflinewidth},
+%         minimum  height=\baselineskip+\extrarowheight-\pgflinewidth] (box) {};
+%       \draw[line cap=round] (box.north west) -- (box.south east);
+%       \node[anchor=south west] at (box.south west) {#3};
+%       \node[anchor=north east] at (box.north east) {#4};
+%     \end{tikzpicture}
+%   }$\hskip-\tabcolsep
+%  }
+% }
+
 
 \newcommand{\conf}[1]{\texttt{#1}\xspace}
 

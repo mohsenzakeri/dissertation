@@ -94,7 +94,7 @@ mechanism for selecting a mapping position for a read when multiple candidates e
 the same transcript, and, finally, introduces a fast edit distance filter (with alignment 
 sub-problem caching) to remove spurious mappings and provide quality scores for 
 mappings that pass the filter. A block diagram of different steps used in the selective 
-alignment pipeline is shown in \ref{fig:block_overview}.
+alignment pipeline is shown in~\cref{fig:block_overview}.
 
 Below, we recapitulate the basic data structures and concepts that will be required to 
 explain the selective alignment algorithm. To start with, the index built on the 
@@ -193,7 +193,7 @@ the high quality mappings. Gathering the suffix array intervals for a query read
 follows the \qm approach. It involves iterating over the read from left to right and 
 repeating two steps. First, hashing a \kmer from the read sequence and then discovering the 
 corresponding suffix array intervals. The process of \kmer lookup is aided by the \kslcp 
-stored in the index (discussed in \ref{sec:safelength}). The inbuilt lexicographic ordering 
+stored in the index (discussed in~\cref{sec:safelength}). The inbuilt lexicographic ordering 
 of the suffixes in the suffix array, and the computed \kslcp values of intervals enable 
 safely extending k-mers to longer matches without the possibility of masking 
 potentially-informative substring matches. Given a matching \kmer, $\samplekmer_r$, 
@@ -223,7 +223,7 @@ paired-end read), we take the \emph{union} of all the transcripts they encode.
 Formally, if  a read $r$ maps to suffix array intervals labeled with $\mathcal{C}^{r_1}, 
 \ldots, \mathcal{C}^{r_n}$, then we consider all transcripts in the set $\mathcal{C}^{r_1} 
 \cup \mathcal{C}^{r_2} \cup \ldots \cup \mathcal{C}^{r_n}$, and the associated positions 
-implied by the suffix array intervals. As shown in figure~\ref{fig:block_overview}; 
+implied by the suffix array intervals. As shown in~\cref{fig:block_overview}; 
 this step is done before \cm.
 
 We adopt a heuristic to avoid excessive \kmer lookups when we encounter a mismatch. 
@@ -235,7 +235,7 @@ such that the mismatch occurs in the middle position. If this \kmer lookup leads
 another suffix array interval, we continue with the MMP extension process there; 
 otherwise, we move again to the first \kmer that does not overlap this mismatch 
 position. We observe that, in practice, the \kslcp, and hence the MMSP lengths can 
-be quite large (Figure \ref{fig:dist}).
+be quite large (\Cref{fig:dist}).
 
 \subsection{Co-Mapping}
 After collecting the suffix array intervals corresponding to left and right ends of the read, we wish to exploit 
@@ -256,7 +256,7 @@ $\mathcal{C}^{r_1^{e_2}}, \ldots, \mathcal{C}^{r_m^{e_2}}$ respectively, we only
 the set $(\mathcal{C}^{r_1^{e_1}} \cup \ldots \cup \mathcal{C}^{r_n^{e_1}}) \cap (\mathcal{C}^{r_1^{e_2}} 
 \cup \ldots \cup \mathcal{C}^{r_m^{e_2}})$.
 We further refine this set by checking the validity of the alignments these hits might support. Currently, 
-we use two validity checks illustrated in figure~\ref{fig:block_overview}. First, we apply an orientation-based 
+we use two validity checks illustrated in~\cref{fig:block_overview}. First, we apply an orientation-based 
 check, and second, we employ a distance-based check. The orientation check removes potential mappings which have 
 an orientation inconsistent with the underlying sequencing library type (e.g., both ends of a read mapping in the 
 same orientation). The distance check removes potential alignments where the implied distance between the read 
@@ -281,7 +281,7 @@ ends is larger than a given, user-defined threshold ($1,000$ nucleotides by defa
 \end{figure}
 
 \paragraph{Coverage based consensus:}
-In \sla, the potential positions on a transcript are scored by their individual coverage on the target transcript. Figure~\ref{fig:maxCov} depicts the mechanism of choosing the best postion on a transcript from multiple probable mappings to the same transcript. The coverage mechanism employed in \sla makes use of the MMSP lengths collected during a prior step of the algorithm rather than simply counting \kmers. In figure~\ref{fig:maxCov}, the transcript $t_2$ has two potential mapping positions given the reads: position 10 and 20. The coverage consensus mechanism selects position 20 over position 10 due to the higher coverage by tiling MMSPs on the read.
+In \sla, the potential positions on a transcript are scored by their individual coverage on the target transcript.~\Cref{fig:maxCov} depicts the mechanism of choosing the best postion on a transcript from multiple probable mappings to the same transcript. The coverage mechanism employed in \sla makes use of the MMSP lengths collected during a prior step of the algorithm rather than simply counting \kmers. In~\cref{fig:maxCov}, the transcript $t_2$ has two potential mapping positions given the reads: position 10 and 20. The coverage consensus mechanism selects position 20 over position 10 due to the higher coverage by tiling MMSPs on the read.
 
 \subsection{Selecting the best candidate transcripts}
 Once the positional ambiguity within a transcript is resolved, the next step is selecting the best candidate transcripts from a set of mappings. Since mapping relies on finding exact matches, the length of the matched subsequence between the read and reference can sometimes be misguiding when comparing different candidate transcripts. That is, the transcripts with the longest exact matches do not always su A block diagram of the steps described below are depicted in Figure pport optimal alignments for a read.  At this point in our procedure, we follow the approach taken by many conventional aligners, and use an existing optimal alignment algorithm to compute the edit distance, by which we select the best candidate transcripts.
@@ -354,7 +354,7 @@ underlying methodology used for quantification. To achieve the most sensitive al
 alignment options suggested for use with \rsem~\citep{rsembmc}. For aligning reads to the transcriptome using 
 \STAR, we used the same options described in \citep{Srivastava2016rapmap}. When processing alignments, \salmon 
 was run with \texttt{-{}-rangeFactorizationBins 4}~\citep{ismb2017factorization} and \texttt{-{}-useErrorModel}. 
-With \sla, \salmon was run using the \texttt{-{}-softFilter} flag (discussed in~\ref{filter}), 
+With \sla, \salmon was run using the \texttt{-{}-softFilter} flag (discussed in~\cref{filter}), 
 a range factorization value of 4 and an edit distance threshold of 7. \kallisto was run with default parameters. 
 Both the \sla and \kallisto indices were built with $k=25$; \hera does not include \kmer size as a user-defined 
 parameter.
@@ -412,7 +412,7 @@ with other \nab methods as well.
 To measure the variation in quantification about a single random instance of simulated data (i.e., data generated 
 with a particular random seed), we have also generated five different simulated RNA-seq datasets by passing 
 different seeds to Polyester. To minimize external variation, we used the least mutated transcriptome 
-(rate 0.01) as reference. By plotting the spearman correlations, as shown in Figure \ref{fig:random_samples}, 
+(rate 0.01) as reference. By plotting the spearman correlations, as shown in~\cref{fig:random_samples}, 
 we observe that, given that all the tools perform well on the random samples, the performance of \sla is grouped 
 with the alignment-based methods, such as \bt and \STAR.  Further, the variation in quantification performance of 
 all methods (i.e. the standared error) across these different simulated replicates is very small.
@@ -476,7 +476,7 @@ concordance between different approaches. Given the results obtained in all of o
 the \bt-based pipeline to be the most accurate, so we are generally looking for high concordance with those 
 quantifiaction estimates.
 
-In Table \ref{tab:correlations}, we compare the quantification results produced by different methods. Each 
+In~\cref{tab:correlations}, we compare the quantification results produced by different methods. Each 
 individual cell contains the average obtained across the five samples. High Spearman correlation and low MARD 
 value between \bt and \sla show that \sla produces results most similar to those based on \bt. Interestingly, 
 the concordance between the \sla and \bt-based pipelines is even higher than the concordance between the two 
@@ -491,36 +491,36 @@ alignment files are not written directly as output of \sla (rather, the \sla alg
 and provides edit-distance-based scores --- as described in~\cref{eqn:softFilter} --- directly to the 
 quantification algorithm).
 
-% \begin{table}
-% \renewrobustcmd{\bfseries}{\fontseries{b}\selectfont}
-% \sisetup{detect-weight,mode=text,group-minimum-digits = 4}
-% \centering
-% \begin{tabular}{|l|c|c|c|c|c|}
-% \hline
-%  Method & \kallisto &\hera  & selective & \STAR & \bt \\ %& \qm
-% \hline
-% \kallisto &  \diag{.1em}{0.8cm}{\num{1}}{\num{0}} & \num{0.189293544242057} 
-% & \num{0.160148930794467} & \num{0.152536064490726} & \num{0.168211319115239} \\
-% \hline
-% \hera & \num{0.868172058407572} & \diag{.1em}{0.5cm}{\num{1}}{\num{0}} 
-% & \num{0.134994519090086} & \num{0.147176566236675} & \num{0.137529630659189}\\
-% \hline
-% \ssla & \num{0.898126618322603} & \num{0.902170309453134} & \diag{.1em}{1.1cm}{\num{1}}{\num{0}} 
-% & \num{0.128558965365635}   & \ubold \num{0.0585736425878761}\\
-% \hline
-% \STAR &   \num{0.898360010715753} & \num{0.89565317161376} & \num{0.912909527305415} 
-% & \diag{.1em}{0.6cm}{\num{1}}{\num{0}} & \num{0.128710771202473} \\
-% \hline
-% \bt & \num{0.890488189578628} & \num{0.900958882919405} & \ubold \num{0.966015219762142} 
-% & \num{0.913252923042169} &  \diag{.1em}{0.7cm}{\num{1}}{\num{0}} \\   \hline
-% \end{tabular}
-% \caption[The accuracy of quantifications computed by all methods on experimental data]
-% {The Spearman correlation and MARDS between transcript abundances computed by all methods on 
-% experimental data. Each number is the mean on 5 different samples; the numbers in the lower 
-% left triangle of the matrix are the Spearman correlations and the ones in upper right are 
-% the MARD values. "\ssla" refers to \sla.}
-% \label{tab:correlations}
-% \end{table}
+\begin{table}
+\renewrobustcmd{\bfseries}{\fontseries{b}\selectfont}
+\sisetup{detect-weight,mode=text,group-minimum-digits = 4}
+\centering
+\begin{tabular}{|l|c|c|c|c|c|}
+\hline
+ Method & \kallisto &\hera  & selective & \STAR & \bt \\ %& \qm
+\hline
+\kallisto &  \diagbox[]{\num{1}}{\num{0}} & \num{0.189293544242057} 
+& \num{0.160148930794467} & \num{0.152536064490726} & \num{0.168211319115239} \\
+\hline
+\hera & \num{0.868172058407572} & \diagbox[]{\num{1}}{\num{0}} 
+& \num{0.134994519090086} & \num{0.147176566236675} & \num{0.137529630659189}\\
+\hline
+\ssla & \num{0.898126618322603} & \num{0.902170309453134} & \diagbox[]{\num{1}}{\num{0}} 
+& \num{0.128558965365635}   & \ubold \num{0.0585736425878761}\\
+\hline
+\STAR &   \num{0.898360010715753} & \num{0.89565317161376} & \num{0.912909527305415} 
+& \diagbox[]{\num{1}}{\num{0}} & \num{0.128710771202473} \\
+\hline
+\bt & \num{0.890488189578628} & \num{0.900958882919405} & \ubold \num{0.966015219762142} 
+& \num{0.913252923042169} & \diagbox[]{\num{1}}{\num{0}} \\   \hline
+\end{tabular}
+\caption[The accuracy of quantifications computed by all methods on experimental data]
+{The Spearman correlation and MARDS between transcript abundances computed by all methods on 
+experimental data. Each number is the mean on 5 different samples; the numbers in the lower 
+left triangle of the matrix are the Spearman correlations and the ones in upper right are 
+the MARD values. "\ssla" refers to \sla.}
+\label{tab:correlations}
+\end{table}
 
 \begin{table}[h]
 \centering
@@ -731,7 +731,7 @@ the query and a set of reference positions, that are sorted based on
 the reference positions.
 
 \subsection{Finding promising \mem chains}
-As shown in figure~\ref{fig:mainScheme}, having all the \mems
+As shown in~\cref{fig:mainScheme}, having all the \mems
 (maximal exact matches) from a read to each target reference, the
 goal of this step is to find promising chains of \mems that cover the
 most unique bases in the read in a concordant fashion and that can potentially lead to a high
@@ -1127,6 +1127,7 @@ it is not as space-efficient as that of \pufferfish.
     \label{fig:upset1}
 \end{figure}
 \begin{figure}
+    \centering
     \includegraphics[width=0.4\linewidth, trim={0in 0in 0in 0in},clip]
     {Figures/puff/ERR013103_trimmed_gencode_3tools_sparse_resubmission_location.pdf}
     \caption[Upset plots for comparing the alignments - location agreement]
@@ -1347,8 +1348,8 @@ known as Covid19 with length of $29,904$ bases. NC\_004718.3 is the ID of SARS c
 We use \mason~\citep{holtgrewe2010mason} to generate three simulated samples,
 each sample contains $500,000$ reads only from one of the three viral references 
 we mentioned earlier. Then, reads were aligned back to the database of viral 
-sequences using each of the four aligners. The results are shown in 
-table~\ref{tab:single-alignment-accuracy} for the reads simulated from the covid19 strain.
+sequences using each of the four aligners. The results are shown in~\cref{tab:single-alignment-accuracy} 
+for the reads simulated from the covid19 strain.
 
 As the results show, the alignments of all aligners, except for \debga, are distributed only 
 across the three references of interest out of all the reference sequences in the complete viral database.
@@ -1369,7 +1370,7 @@ The results indicate that, when allowing more than one alignment to be reported 
 tends to report a large number of sub-optimal (yet, still valid) alignments compared to other tools. 
 These are alignments that are accepted within the alignment score threshold, but are to another target 
 than the one from which the read truly originates. Generating these sub-optimal alignments is in no way 
-wrong, but it has a non-trivial computational cost, as shown in figure~\ref{sfig:single_align}, even if 
+wrong, but it has a non-trivial computational cost, as shown in~\cref{fig:alignment_performance}, even if 
 these alignments are not used in downstream analysis. Further, the score of the best alignment for each 
 read is specific to that read and not known ahead of time, meaning that this situation cannot be completely 
 addressed simply by setting more stringent parameters for which alignment scores should be allowed. 
@@ -1381,7 +1382,7 @@ Inspecting this alignment reveals it is a valid alignment within the range of th
 threshold, and it is unclear why it is not discovered by the other tools. Overall, the aligners tested 
 perform very well here in reporting the true strain of origin without reporting too many extra alignments. 
 Interestingly, despite changing the parameters to allow more alignments, \st tends to return the same set 
-of alignments under all configurations in this experiment.  Figure~\ref{fig:alignment_performance} shows 
+of alignments under all configurations in this experiment.~\Cref{fig:alignment_performance} shows 
 that \puffaligner has the lowest running time, even when the number of allowed alignments per read increases.
 
 \paragraph{BestStrata Mode}
@@ -1454,8 +1455,8 @@ alignment of bulk metagenomic samples in the next section.
 
 We chose a random set of $4000$ complete bacterial genomes
 downloaded from the NCBI microbial database and constructed the indices of \puffaligner, \bt, \st, and 
-\debga on the selected genomes. \Cref{fig:size-scaling} shows the time and memory required for constructing 
-each of the indices, in addition to the size of the final index on disk.
+\debga on the selected genomes.~\Cref{sfig:construction} shows the time and memory required for constructing 
+each of the indices, while the size of the final index on disk is displayed in~\cref{sfig:size}.
 Overall, \puffaligner and \bt show a similar trend in time and memory requirements, while \st and \debga 
 require an order of magnitude more memory. In terms of the final index size, \bt has the smallest index, 
 \puffaligner has the second-smallest, and \st has the largets.
@@ -1484,11 +1485,18 @@ However, less than $200k$ of the reads in the sample were aligned to the strains
 leading the selection of $98$ species from a variety of genera.
 We scaled the read counts in the simulation to $\sim50M$ reads. The other two selected samples are 
 \texttt{SRR11283975} and \texttt{SRR11496426}
-the details of which are explained in ~\ref{tab:metagenome_sample_info}.
+the details of which are explained in~\cref{tab:metagenome_sample_info}.
 In this section we only report the performance of the tools on the first sample.
 
 \begin{table}\centering
-\begin{tabular}{c||cccc}
+    \caption[Information for samples selected for simulating mock bulk metagenomic samples]
+    {Basic information for samples selected for simulating mock bulk metagenomic samples. 
+    The SRR10948222 sample is collected for Finding sub-biocrust soil microbial communities in Mojave Desert, 
+    California, United States. The SRR11283975 sample collected from the Jiaodong Peninsula, China to study the 
+    impact of different acidification degrees on the bacterial community. The SRR11496426 sample is collected 
+    from the oil site of Uzon Caldera to study the composition, genetics characteristics and structure of the 
+    microbial communities.}    
+    \begin{tabular}{c||cccc} 
     \toprule
     Accession
     & \# of reads
@@ -1506,13 +1514,6 @@ In this section we only report the performance of the tools on the first sample.
     & 42.3k & 30,203 & 1,029,382 & 179 \\
     \bottomrule
 \end{tabular}
-\caption[Information for samples selected for simulating mock bulk metagenomic samples]
-{Basic information for samples selected for simulating mock bulk metagenomic samples. 
-The SRR10948222 sample is collected for Finding sub-biocrust soil microbial communities in Mojave Desert, 
-California, United States. The SRR11283975 sample collected from the Jiaodong Peninsula, China to study the 
-impact of different acidification degrees on the bacterial community. The SRR11496426 sample is collected 
-from the oil site of Uzon Caldera to study the composition, genetics characteristics and structure of the 
-microbial communities.}
 \label{tab:metagenome_sample_info}
 \end{table}
 
@@ -1541,6 +1542,7 @@ both for a high-abundance and low-abundance reference.
 
 \begin{table}[h!]
     \centering
+    \scalebox{0.9}{
     \begin{tabular}{l|l|p{2cm}|cccc}
         \toprule
         \parbox[c]{3cm}{Accession ID} & \parbox[c]{0.8cm}{Alignment Mode} &\parbox[c]{2cm}{Tool}
@@ -1618,7 +1620,7 @@ both for a high-abundance and low-abundance reference.
         &\multirow{2}{*}{Best strata} &\parbox[c]{2cm}{\puffaligner} & 0.97 & 0.002 & 0.36 & \num{0.001} \\
         &&\parbox[c]{2cm}{\st} & 0.929 & 0.004 & 0.3 & \num{0.002} \\
         \bottomrule
-    \end{tabular}
+    \end{tabular}}
     \caption[Accuracy of quantification of simulated metagenomic samples using different aligners]{Accuracy of abundance estimation with \salmon using alignments reported by each aligner 
     for the mock samples simulated from the real samples with accession IDs SRR10948222, SRR11283975 and SRR11496426.
     We have run all the aligners in three main modes; allowing only one
@@ -1647,8 +1649,8 @@ leads to a higher recall. While \st's accuracy changes only slightly from
 20 alignments to 200 alignments (only improving MAE) the results for
 \puffaligner and \bt improve considerably when allowing more alignments per
 read. However, this higher accuracy comes in the cost of alignment time
-for \bt. As shown in figure~\ref{fig:alignment_performance},
-section~\ref{sfig:bulk_align}, \bt alignment time increases sharply when allowing more
+for \bt. As shown in~\cref{fig:alignment_performance}, 
+\bt alignment time increases sharply when allowing more
 alignments per read, while \puffaligner exhibits only small changes in alignment time 
 regardless of the maximum number of alignments being reported per read. 
 The difference becomes especially evident when allowing up to 200 alignments per read, 
@@ -1680,11 +1682,11 @@ while being much faster.
     %\label{sfig:bulk_align}
     \caption[Time performance of different aligners on the microbiome
     experiments]{Time performance of different aligners on the two microbiome
-    experiments. In~\ref{sfig:single_align}, the results are averaged
+    experiments. In (a), the results are averaged
     over the three alignment processes for the samples covid19, sars, and
     bat200, each having $\sim1M$ paired-end reads.
-    In~\ref{sfig:bulk_align} the performance shown is for aligning reads
-    in mock sample simulated from SRR10948222 with $5M$ paired-end reads.
+    The performance shown in (b) is for aligning reads
+    in the mock sample simulated from SRR10948222 with $5M$ paired-end reads.
     As shown in the bulk experiment, the alignment for \bt
     increases when asking for more alignments per read while the other tools show a
     constant alignment time scaling over number of reads. The dashed area
@@ -1719,11 +1721,10 @@ while being much faster.
     genome (GRCh38 primary assembly), and collection of genomes (4000
     random bacterial complete genomes). All tools are run with 16 threads.}
     \label{sfig:construction}
-    % \label{fig:size-scaling}
     \vspace{-0.2in}
 \end{figure}
 
-Figure~\ref{fig:size-scaling} represents how the construction time and
+~\Cref{sfig:construction} and~\cref{sfig:size} represents how the construction time and
 index size of each tool scales over different types of sequences. 
 The trend shows the effect of database size as well as redundancy and sequence similarity on
 the scalability of each of the tools. Tools such as \puffaligner and

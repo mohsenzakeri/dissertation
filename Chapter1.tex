@@ -397,7 +397,7 @@ transcript types in transcriptome $T$, $t_1, t_2, ..., t_M$. In a given sample
 there are $c_i$ copies of transcript type $t_{i}$, which are not observed directly.
 
 \subsection{The generative model of a sequencing experiment}
-\label{subsec:likelihood}
+%\label{subsec:likelihood}
 
 The generative model of RNA-seq experiments states that the number of fragments 
 sequenced from $i^{th}$ transcript type is proportional to the total number of 
@@ -722,7 +722,7 @@ pandas library~\citep{reback2020pandas} in Python.
 \subsection{Inference of the Posterior Distribution of RNA-seq quantification}
 Estimating the inference uncertainty of the RNA-seq quantification is one of the crucial
 steps for many downstream analysis, e. g., finding the differentially expressed genes or 
-transcripts, i. e., DE analysis. In fact, methods like Swish~\cite{zhu2019nonparametric}
+transcripts, i. e., DE analysis. In fact, methods like Swish~\citep{zhu2019nonparametric}
 directly use the inferential replicates created by RNA-seq quantification tools for finding
 the DE genes with a higher precision compared to other approaches.
 
@@ -740,7 +740,7 @@ of \txps in the sample increases the convergance usually takes longer.
 
 % talk about bootstrap sampling
 \boots is the other main approach for estimating the posterior distribution of the abundance
-estimations in RNA-seq. The bootstrap procedure \cite{efron1979computers} is a widely-used 
+estimations in RNA-seq. The bootstrap procedure \citep{efron1979computers} is a widely-used 
 and computationally straightforward procedure for calculating measures of accuracy of an 
 estimator. It works by resampling (with replacement) from the observed data, and treating 
 these as population samples. The procedure has been used in many contexts for non-parametric 
@@ -748,11 +748,11 @@ estimation. In RNA-seq, Computing the abundance estimation of all \boot sample l
 estimating a posterior distribution for the abundances. 
 
 % talk about the current methods available for estimating the posterior
-RNA-seq quantification tools~(\cite{kallisto,salmon} have implemented the regular bootstrap 
+RNA-seq quantification tools~(\citep{kallisto,salmon} have implemented the regular bootstrap 
 sampling by resampling the \eqc counts. \eqcs are a summerized representations of the reads, 
 therefore, sampling the \eqc counts instead of each individual read improves the efficiency 
 of the \boots. \pboots is also another way of generating \boot samples by sampling the 
-positions where the reads map to on each transcript~\cite{xiong2016probabilistic}.
-Furthermore, the RNA-seq quantification tool, Salmon~\cite{salmon} also includes a \gibbs
-procedure for estimating the posterior distribution.  Bitseq~\cite{glaus2012identifying} 
+positions where the reads map to on each transcript~\citep{xiong2016probabilistic}.
+Furthermore, the RNA-seq quantification tool, Salmon~\citep{salmon} also includes a \gibbs
+procedure for estimating the posterior distribution.  Bitseq~\citep{glaus2012identifying} 
 applies a MCMC \gib sampler to generate samples from the posterior probabilty distribution. 
