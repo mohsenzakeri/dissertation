@@ -88,8 +88,7 @@ analysis of the abundance estimations.
 It is possible to detect coverage anomalies during both the online 
 and offline phases of the quantification procedure. During the online phase, reads are assigned only once, 
 therefore, scanning all the transcripts once at the end of the online phase could highlight the anomalies. However, 
-the reads are redistributed during each iteration of the offline EM. Therefore, keeping track of the anomalies 
-in that case is more challenging. Another challenge is that the mapping positions are not available in this phase 
+the reads are redistributed during each iteration of the offline EM. Therefore, keeping track of the anomalies, in that case, is more challenging. Another challenge is that the mapping positions are not available in this phase 
 in the current implementation of offline EM. One possible solution is keeping track of mapping positions by 
 increasing the resolution of the equivalence classes. In addition to these challenges, some anomalies will 
 never be resolved by re-distributing the reads, probably because the reads are not sequenced from any of 
