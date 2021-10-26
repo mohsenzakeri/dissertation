@@ -29,52 +29,50 @@ Dissertation Directed by: & {\large  Professor Rob Patro} \\
 \renewcommand{\baselinestretch}{2}
 \large \normalsize
 
-The analysis of the high throughput sequencing (HTS) data includes 
-a number of involved computational steps, ranging from the assembly 
-of the reference sequences, mapping or alignment of the reads to 
-existing or assembled sequences, estimating the abundance of 
-sequenced molecules, performing differential or comparative 
-analysis between samples, and even inferring dynamics of interest 
-from snapshot data. Many methods have been developed for these 
-different tasks that provide different trade-offs in terms of 
-accuracy and speed, because precision typically comes at the 
-expense of sacrificing speed and vice versa. Throughout this 
-work, I review different aspects of the available methods for 
-alignment and quantification steps of RNA-seq data. Furthermore, 
-I explore finding a reasonable balance between these competing 
-goals to introduce methods which are designed to be almost as 
-good as the most accurate approaches, while being as fast as the 
-methods that focus on speed.
+The analysis of the high throughput sequencing (HTS) data includes a number 
+of involved computational steps, ranging from the assembly of reference 
+sequences, mapping or alignment of the reads to existing or assembled 
+sequences, estimating the abundance of sequenced molecules, performing 
+differential or comparative analysis between samples, and even inferring 
+dynamics of interest from snapshot data. Many methods have been developed 
+for these different tasks that provide various trade-offs in terms of 
+accuracy and speed, because accuracy and robustness typically come at the 
+expense of sacrificing speed and vice versa. In this work, I focus on the 
+problems of alignment and quantification of RNA-seq data, and review 
+different aspects of the available methods for these problems. I explore 
+finding a reasonable balance between these competing goals, and introduce 
+methods that provide accurate results without sacrificing speed.
 
-Alignment or mapping of the sequencing reads to the known reference 
-sequences is a challenging computational step in the pipeline because 
-of the large size of sample data. A typical RNA-seq sample often consists 
-of 10s of millions of paired-end reads which should be queried against the 
-large number of reference sequences to find the most similar reference substrings 
-under some notion of edit distance. Therefore, the aligners index the reference 
-sequences to accelerate the search procedure. Furthermore, recent quantification 
-methods, introduced the concept of lightweight alignment in order to accelerate 
-the mapping step, and therefore, the whole quantification pipeline. I collabrated 
-with my colleagues to explore some of the shortcomings of the lightweight alignments, 
-and to try to address those with a new approach called the selective alignment. 
-Moreover, we introduce a new aligner, Puffaligner, which benefits from the indexing 
-approach introduced by the Pufferfish index and also the idea of selective-alignment 
-to produce accurate alignments in a short time compared to other popular aligners.
+Alignment or mapping of sequencing reads to known reference sequences is 
+a challenging computational step in the RNA-seq pipeline mainly because of 
+the large size of sample data and reference sequences, and highly-repetitive 
+sequence. Recent quantification methods introduced the concept of lightweight 
+alignment in order to accelerate the mapping step, and therefore, the whole 
+quantification pipeline. I collaborated with my colleagues to explore some 
+of the shortcomings of the lightweight alignment methods, and to address 
+those with a new approach called the selective-alignment. Moreover, we 
+introduce an aligner, Puffaligner, which benefits from both the indexing 
+approach introduced by the Pufferfish index and also selective-alignment 
+to producing accurate alignments in a short amount of time compared to other 
+popular aligners.
 
-I have also explored the shortcomings of the approximate generative model used in the 
-fast RNA-seq quantifiers. In these methods, fragments (reads) are grouped together 
-into equivalence classes which are sets of sequenced fragments for which all the 
-fragments are compatible with a specific set of reference sequences. Therefore, in 
-the approximate models, all the fragments in each group are treated as identical, 
-which factorizes the likelihood function being optimized and increases the speed of 
-the optimization step. I have explored how this factorization affects the accuracy of 
-abundance estimates, and propose a new factorization approach for approximating the 
-likelihood which demonstrates higher fidelity to the exact model.
+To improve the speed of RNA-seq quantification given a collection of alignments, 
+some tools group fragments (reads) into equivalence classes which are sets of 
+fragments that  are compatible with the same subset reference sequences. 
+Summarizing the fragments into equivalence classes  factorizes the likelihood 
+function being optimized and increases the speed of the typical optimization 
+algorithms deployed. I explore how this factorization affects the accuracy of 
+abundance estimates, and propose a new factorization approach which demonstrates 
+higher fidelity to the non-approximate model.
 
-%Finally, I propose the possible path forward for increasing the accuracy of 
-%abundance estimation tools in the cases where there are anomalies in transcript 
-%coverages which could lead to the detection of unannoated transcripts. Also, 
-%I will investigate if representing single cell expression matrices in terms of 
-%equivalence classes, rather than the gene counts, increases the accuracy or 
-%robustness of the downstream analysis of the single cell pipelines, such as 
-%dimensionality reduction and cell clustering.
+Finally, estimating the posterior distribution of the transcript expressions is 
+a crucial step in finding robust and reliable estimates of transcript abundance 
+in the presence of high levels of multi-mapping. To assess the accuracy of their 
+point estimates, quantification tools generate inferential replicates using 
+techniques such as Bootstrap sampling and Gibbs sampling. The utility of inferential 
+replicates has been portrayed in different downstream RNA-seq applications, i.e., 
+performing differential expression analysis. I explore how sampling from both 
+observed and unobserved data points (reads) improves the accuracy of Bootstrap 
+sampling. I demonstrate the utility of this approach in estimating allelic 
+expression with RNA-seq reads, where the absence of unique mapping reads to 
+reference transcripts is a major obstacle for calculating robust estimates.
