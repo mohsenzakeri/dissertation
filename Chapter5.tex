@@ -30,7 +30,19 @@ RNA-seq, and metagenomic reads. \puffaligner finds high quality alignments for s
 which are similar to the ones discovered by accurate tools, e.g., \bt, in a much shorter amount
 of time.
 
-I have explored ways to improve the approximate model used by fast RNA-seq quantification in
-~\cref{chapt3}.
+We have investigated the effect of the factorization of the likelihood employed
+by lightweight RNA-seq quantification tools on the accuracy of the estimatations. These tools
+treat all the fragments (reads) which are mapped to the same set of reference sequences as identical,
+and represent all the fragments compatible with the same set of transcripts as one equivalence
+class in the likelihood function. 
+This factorization approximates the likelihood function because of the differences in the 
+characteristics of each fragment in a equivalence class, e.g., different fragment length
+and alignment compatibilities leads to different conditional probabilities.
+I have proposed an improved factorization in ~\cref{chapt3} which groups the fragments
+in an equivalence class that are not only similar in terms of the set of transcripts by which
+they are compatible, but also similar in terms of the conditional probabilities to those
+set of transcripts. We observed that this improved factorization leads to improved accuracy of 
+the abundance estimation with almost no effect on the speed of the lightweight methods.
+
 
 
