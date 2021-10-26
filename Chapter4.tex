@@ -202,7 +202,43 @@ highly-ambiguous components within the inference problem.  Thus, we are, in effe
 smaller set of pseudo-observations that are more likely to uncover the relevant uncertainty 
 in our estimator.
 
-\textcolor{red}{talk about just sampling from the single-transcript equivalence classes — that is, we can take 
-this idea one step further by, instead of generating pseudo-observations only from 
+\textcolor{red}{talk about just sampling from the single-transcript equivalence classes — that is, 
+we can take this idea one step further by, instead of generating pseudo-observations only from 
 $\mathcal{T}_\mathcal{F}$, only generating those \textit{specific} pseudo-observations from along 
 the transcripts in $\mathcal{T}_\mathcal{F}$ that are unique to each transcript.}
+
+\section{Results}
+
+\subsection{Estimating the allelic expression}
+We have created a simulated dataset of Drosophila with expression of the reads from two alleles of 
+each gene. To create the allelic reads, we flip a random base in the original genes and then generate
+reads with Polyester RNA-seq simulator\cite{frazee2015polyester} from both allelic genes. Based on the 
+procedure for generating the allelic reads, most, if not all, the reads mapping to a transcript, map 
+to both its paternal and maternal alleles.
+
+First of all, we demonstrate how the regular \boots fails to capture the entire posterior distributions
+for many \txps in this sample. We create inferential replicates by \boots available in \salmon and 
+\kallisto. We also create \boot samples using the \aboots with different weights. We \salmon in two
+different optimization modes of `EM' and `VBEM'. The `EM' mode is the regular expected maximization 
+algorithm and the `VBEM' is a variational bayesian version of the EM with a non-zero priors for the 
+model's parameters which induces further sparsity on the final solution.
+
+\begin{table} \centering
+    \begin{tabular}{lrrrr}
+    \toprule
+    {}  & Spearman-all & MARD-all  & MARD-subset & Spearman-subset \\
+    \midrule
+    \kallisto & \num{0.9393075} & \num{0} & \num{0} & \num{0} \\
+    \kallisto \boot & \num{0.942153293871728} & \num{0} & \num{0} & \num{0} \\
+    \salmon EM point-estimates & \num{0.9537012} & \num{0.} & \num{0.} & \num{0.} \\
+    \salmon VBEM point-estimates & \num{0.7967372} & \num{0} & \num{0.} & \num{0.} \\
+    \salmon EM \boot & \num{0.986101} & \num{0} & \num{0.}  & \num{0.} \\
+    \salmon VBEM \boot  & \num{0.9010147} & \num{0} & \num{0.}  & \num{0.} \\
+    \salmon VBEM \aboot (w=0.005) & \num{0.977737} & \num{0.} & \num{0.} & \num{0.} \\
+    \salmon VBEM \aboot (w=0.01) & \num{0.9852121} & \num{0.} & \num{0} & \num{0.} \\
+    \salmon VBEM \aboot (w=0.1) & \num{0.9924701} & \num{0.} & \num{0} & \num{0.} \\
+    \bottomrule
+    \end{tabular}
+    \captionof{table}[Quantification of allelic transcriptome]{}
+    \label{tab:allele}
+\end{table}
