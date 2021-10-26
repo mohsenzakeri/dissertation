@@ -5,7 +5,7 @@
 \chapter[Data-Driven Likelihood Factorizations]{Improved Data-Driven 
 Likelihood Factorizations for Transcript Abundance Estimation
 \footnote{This work is presented in the proceedings of ISMB 2017}} 
-\label{chapt:ddfact}
+\label{chapt3}
 
 \section{Introduction}
 
@@ -910,15 +910,24 @@ improved accuracy on these transcripts.
 
 \begin{table}
 \centering
-\begin{tabular}{
-    lS[table-format=7]S[table-format = 7]S[table-format = 7]S[table-format = 9]
-    }
+\begin{tabular}{lrr}
+    % {
+    % lS[table-format=7]S[table-format = 7]S[table-format = 7]S[table-format = 9]
+    % }
 \toprule
-{} &          \salu &     \salmon &        \salrf &         \salfm \\
+{} &          $\#$ eq. classes &     $\#$ hits \\
 \midrule
-\# eq. classes &438393  &438393  &625638 &29447710 \\
-\# hits                           &5986371 &5986371 &8212669 &103663423\\
+\salu & 438393& 5986371\\
+\salmon  & 438393& 5986371 \\
+\salrf &625638 & 8212669\\
+\salfm & 29447710& 103663423\\
 \bottomrule
+% \toprule
+% {} &          \salu &     \salmon &        \salrf &         \salfm \\
+% \midrule
+% \# eq. classes &438393  &438393  &625638 &29447710 \\
+% \# hits                           &5986371 &5986371 &8212669 &103663423\\
+% \bottomrule
 \end{tabular}
 \caption{The number of equivalence classes and hits, in the
   simulated data, under different likelihood factorizations.}
