@@ -174,7 +174,7 @@ observed.  The cost for this, of course, is that we must make some decision abou
 We have defined the augmented bootsrap procedure as augmenting the observed sample with 
 pseudo-observations for \textit{all possible} observations. This can immediately pose some challenges. 
 First, it requires that the set of possible observations is finite and sufficiently small to be 
-enumerated.  Second, many possible pseudo-observations, though technically possible given the 
+enumerated. Second, many possible pseudo-observations, though technically possible given the 
 imposed prior, may have little to no effect on the resulting inference of interest.
 
 Again, consider our running example of transcript abundance estimation. Here, under observations 
@@ -184,13 +184,12 @@ sampling pseudo-observations from these transcripts may lead to small fluctuatio
 abundance of these transcripts across bootstrap replicates, but it is unlikely to have any 
 substantial effect on the "main" inference problem (i.e. the estimated maximum likelihood 
 abundances of non-trivially expressed transcripts) — and since no "true" observations are 
-observed compatible with these transcripts, we'd expect their posterior samples to be rather 
-uninteresting.
+compatible with these transcripts, we'd expect their posterior samples to be rather uninteresting.
 
 This immediately suggests one potential heuristic for limiting the number of pseudo-observations 
 with which we will augment our true samples. Let $\mathcal{T}$ be our complete set of transcripts 
 and let $\mathcal{T}_\mathcal{F}$ be the set of transcripts having at least one fragment in 
-$\mathcal{F}$ that aligns to them.  Rather than generating pseudo-observations from all of 
+$\mathcal{F}$ that aligns to them. Rather than generating pseudo-observations from all of 
 $\mathcal{T}$, we may consider generating pseudo-observations only from 
 $\mathcal{T}_\mathcal{F}$ — that is from transcripts that we predict to be expressed and from those 
 that have compatible observations (but which we may not predict to be expressed in the maximum 
@@ -198,7 +197,7 @@ likelihood estimate). In general, this will produce far fewer pseudo-observation
 generate them from all of $\mathcal{T}$. Furthermore, the sampling of \textit{these} 
 pseudo-observations are much more likely to lead to alternative high-likelihood estimates across 
 bootstrap-replicates, because they are most likely to change the balance of observations in 
-highly-ambiguous components within the inference problem.  Thus, we are, in effect, selecting a 
+highly-ambiguous components within the inference problem. Thus, we are, in effect, selecting a 
 smaller set of pseudo-observations that are more likely to uncover the relevant uncertainty 
 in our estimator.
 
@@ -206,6 +205,8 @@ in our estimator.
 we can take this idea one step further by, instead of generating pseudo-observations only from 
 $\mathcal{T}_\mathcal{F}$, only generating those \textit{specific} pseudo-observations from along 
 the transcripts in $\mathcal{T}_\mathcal{F}$ that are unique to each transcript.}
+
+
 
 \section{Results}
 
