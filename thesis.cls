@@ -165,6 +165,8 @@
 \newcommand{\gibbs}{Gibbs sampling\xspace}
 \newcommand{\boots}{Bootstrap sampling\xspace}
 \newcommand{\boot}{Bootstrap\xspace}
+\newcommand{\aboots}{augmented Bootstrap sampling\xspace}
+\newcommand{\aboot}{augmented Bootstrap\xspace}
 \newcommand{\pboot}{positional Bootstrap\xspace}
 \newcommand{\pboots}{positional Bootstrap sampling\xspace}
 \newcommand{\mle}{maximum likelihood estimation\xspace}

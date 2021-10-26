@@ -331,7 +331,19 @@ a read is shared between references, and to reuse the cached result in such case
 \subsection{Evaluating the performance of \sla}
 
 
-To evaluate the effectiveness of \sla, we coupled it with the quantification tool \salmon (branching from the v0.9.1 release). This enables us to measure the effect of different alignment based and non-alignment based algorithms on transcript-level quantification results directly, holding the statistical estimation procedure fixed. We also include \kallisto(v0.43) in our benchmarks, which provides a perspective on \pa-based quantification. Furthermore, we compare the performance of \sla with the recent, fast, hashing and alignemnt-based, abundance estimation tool (currently un-published) \hera~\footnote{\url{https://github.com/bioturing/hera}}. We note, this is an early version of the \hera(v1.2) software, which is already performing very well in our testing, but is subject to changes and improvements. Given it's impressive performance (in both time and accuracy), we decided to include \hera in our comparisons with the consent of its authors (personal communications). We measure the Spearman correlation and Mean Absolute Relative Differences (MARD) of read counts as performance metrics when comparing the different methods (further metrics are also provided for some of the experiments in the supplementary material). All experiments were performed on an Intel(R) Xeon(R) CPU (E5-2699 v4 @2.20GHz with 44 cores and 56MB L3 cache) with 512GB RAM and a 4TB TOSHIBA MG03ACA4 ATA HDD running ubuntu 16.10 and each method was run using 16 threads.
+To evaluate the effectiveness of \sla, we coupled it with the quantification tool \salmon (branching from the v0.9.1 
+release). This enables us to measure the effect of different alignment based and non-alignment based algorithms on 
+transcript-level quantification results directly, holding the statistical estimation procedure fixed. We also include 
+\kallisto(v0.43) in our benchmarks, which provides a perspective on \pa-based quantification. Furthermore, we compare 
+the performance of \sla with the recent, fast, hashing and alignemnt-based, abundance estimation tool (currently un-published) 
+\hera~\footnote{\url{https://github.com/bioturing/hera}}. We note, this is an early version of the \hera(v1.2) software, 
+which is already performing very well in our testing, but is subject to changes and improvements. Given it's impressive 
+performance (in both time and accuracy), we decided to include \hera in our comparisons with the consent of its authors 
+(personal communications). We measure the Spearman correlation and Mean Absolute Relative Differences (MARD) of read 
+counts as performance metrics when comparing the different methods (further metrics are also provided for some of the 
+experiments in the supplementary material). All experiments were performed on an Intel(R) Xeon(R) CPU (E5-2699 v4 @2.20GHz 
+with 44 cores and 56MB L3 cache) with 512GB RAM and a 4TB TOSHIBA MG03ACA4 ATA HDD running ubuntu 16.10 and each method 
+was run using 16 threads.
 
 In all our experiments, reads are mapped to the transcriptome using using \bt, \kallisto, \hera, \sla and \STAR. 
 Subsequently, transcripts are quantified by \salmon(v0.9.1) using the relevant mappings (from alignment or the 
