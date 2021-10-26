@@ -18,7 +18,7 @@ transcriptome, with the goal of improving transcript-level quantification in adv
 scenarios.
 \footnote{This is a joint project with Hirak Sarkar and is presented in BCB 2017~\citep{selaln}}
 
-Furthermore, in the second part of this chapter, we build upon the idea of selective 
+Furthermore, in the second section of this chapter, we build upon the idea of selective 
 alignment to introduce Puffaligner~\citep{almodaresi2021puffaligner}, an all purpose 
 aligner for short read sequencing reads which can be used in many cases ranging from 
 alignment of RNA-seq, DNA-seq and metagenomic samples to known set of references. 
@@ -58,7 +58,7 @@ sufficient length from the true transcript. In another case, the true mapping of
 read might be lost from the set of potential mapping loci due to the greedy nature of 
 the mapping procedures. For some reads, multiple positions might be found on the same 
 transcript where the read maps. In such cases, improved heuristics are required to address 
-these challenges. In this paper, we present a novel algorithm, \sla, that extends 
+these challenges. In this section, we present a novel algorithm, \sla, that extends 
 quasi-mapping to compute and store edit distance information where necessary. The reads 
 for alignment are chosen based on certain criteria calculated during mapping.  This strikes 
 a balance between speed and accuracy; not compromising the superior speed of \nab 
@@ -556,7 +556,7 @@ reasonable alignment scoring filters. Moreover, it is sometimes desirable to be 
 the edit distance or alignment that would result from a given mapping location. The recently-introduced \hera 
 validates mapping quality using alignment, which resolves spurious mappings, though it still suffers a loss of 
 sensitivity compared to traditional alignment methods, and fails to process \denovo assembled transcriptomes. 
-In this paper, we introduce a selective alignment algorithm that attempts to bridge the gap between these \nab 
+In this section, we introduced a selective alignment algorithm that attempts to bridge the gap between these \nab 
 algorithms and more traditional alignment approaches. \Sla improves upon both the sensitivity and specificity 
 of these \nab algorithms while making very moderate concessions with respect to the computational budget. 
 To achieve this level of efficiency, a number of algorithmic innovations were required, some of which may be of 
@@ -1029,7 +1029,7 @@ abundance estimation of metagenomic samples.
 The performance of each tool is impacted by the different alignment scoring schemes they use, e.g. 
 different penalties for mismatches, and indels. To enable a fair comparison, we attempted to configure 
 the tools so as to minimize divergences that simply result from differences in the scoring schemes. For 
-the experiments in this paper, we use \bt in a near-default configuration (though ignoring quality values), 
+the experiments in this section, we use \bt in a near-default configuration (though ignoring quality values), 
 and attempt to configure the other tools, as best as possible, to operate in a similar manner.
 
 The \debga scoring scheme is not configurable, so we use this aligner in the default mode (unfortunately, 
@@ -1738,7 +1738,7 @@ increases, which is another reason why the size is growing super-linearly.
 \subsection{Discussion \& Conclusion}
 \label{sec:conclusion}
 
-In this paper we introduce \puffaligner, an aligner suitable for the
+In this section we introduced \puffaligner, an aligner suitable for the
 contiguous alignment of short-read sequencing data. We demonstrate its
 use in aligning DNA-seq reads to the genome of a single species, aligning RNA-seq reads
 to the transcriptome, and aligning DNA-seq reads from metagenomic samples to a 
