@@ -5,3 +5,32 @@
 \chapter[Conclusion]{Conclusion} 
 \label{conclusion}
 
+Throughout this dissertation, we have explored improving the lightweight approaches
+employed in various steps of the RNA-seq analysis pipeline, i.e., mapping or alignment
+of the reads to a known reference, estimating the abundance of transcripts, and 
+assesing the accuracy of the point estimates by estimating the posterior distribution.
+The recurring theme of all the methods we have introduced here is improving the accuracy
+of lightweight methods by maintaining their efficiency.
+
+In~\cref{chapt2}, we introduced selective-alignment as a new algorithm for efficiently
+aligning the reads to the reference transcriptome. This approach increases both sensitivity
+and specificity of quasi-mapping. Selective-alignment increases the sensitivity by performing
+safe skips for querying each \kmer in the reference. It also relaxes other constraints
+imposed on merging the mappings discovered for a read. It also introduces the concept of 
+co-mapping for further refining the candidate mappings. Selective-alignment also computes
+an alignment score for each mapping to further filter spurious hits. The alignment-score
+could be also used in the quantification step to improve the accuracy of the estimations.
+We show how selective-alignment improves the accuracy of the quantification with lightweight
+methods without sacrificing the performance.
+
+Furthermore, we have introduced \puffaligner in~\cref{chapt2}. \puffaligner is built on top
+of the \pufferfish index which is an efficient \ccdbg base index of a collection of reference
+sequences. \puffaligner is multi-purpose aligner which can be utilized for aligning DNA-seq, 
+RNA-seq, and metagenomic reads. \puffaligner finds high quality alignments for short reads 
+which are similar to the ones discovered by accurate tools, e.g., \bt, in a much shorter amount
+of time.
+
+I have explored ways to improve the approximate model used by fast RNA-seq quantification in
+~\cref{chapt3}.
+
+
