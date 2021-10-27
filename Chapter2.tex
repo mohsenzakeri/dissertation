@@ -136,7 +136,7 @@ matching reads against them.
     \label{fig:safelength}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}%[h]
  \centering
  \includegraphics[scale=0.3]{Figures/sla/overview}
  \caption[The main steps of the \sla process]{The three main steps of the \sla 
@@ -401,10 +401,11 @@ vectors directly. On the other hand, \bt and \STAR generate alignment files that
   \label{fig:random_samples}
 \end{figure}
 
-Performance of the various methods on a simulated sample is shown in \cref{tab:diff_mutation}. In this case, 
+Performance of the various methods on a simulated sample is shown in~\cref{tab:diff_mutation_sp}
+and~\cref{tab:diff_mutation_mard}. In this case, 
 the simulated sample is mapped against $5$ different mutated transcriptomes with increasing error rates and the 
 corresponding spearman correlation and MARD values calculated using the ground truth. As shown in 
-\cref{tab:diff_mutation}, the correlation between quantification estimates using \sla and the ground truth is 
+\cref{tab:diff_mutation_sp}, the correlation between quantification estimates using \sla and the ground truth is 
 higher than the other self-contained quantification methods, \kallisto and \hera. This gap between correlation 
 values increases as the rate of mutation in the reference transcriptome is increased, showing the ability of 
 \sla to accurately map reads against diverging transcriptomes. The MARD values for \sla are lower in comparison 
@@ -436,7 +437,7 @@ all methods (i.e. the standared error) across these different simulated replicat
   The spearman correlation is calculated with respect to the ground truth.}
 }
 \vspace{-0.3in}
-\label{tab:diff_mutation}
+\label{tab:diff_mutation_sp}
 \end{center}
 \end{table}
 
@@ -458,7 +459,7 @@ Mutation Rate & Kallisto & Hera & Selective Alignment & STAR-Salmon &Bowtie2-Sal
   The MARD (mean absolute relative difference) is calculated with respect to the ground truth.}
 }
 \vspace{-0.3in}
-\label{tab:diff_mutation}
+\label{tab:diff_mutation_mard}
 \end{center}
 \end{table}
 
@@ -523,7 +524,7 @@ the MARD values. "\ssla" refers to \sla.}
 \label{tab:correlations}
 \end{table}
 
-\begin{table}[h]
+\begin{table}%[h]
 \centering
 \begin{tabular}{lrr}
 \toprule
@@ -748,7 +749,7 @@ based on the number of unique covered bases in the read, the coverage
 score is also penalized by the length of the gaps, both in the read
 and reference sequence, between each consecutive pair of \mems.
 
-\begin{figure}[H]
+\begin{figure}%[H]
     \centering
     \includegraphics[width=0.95\columnwidth, trim={0in 0in 0in 0in},clip]{Figures/puff/MainFig.pdf}
     \caption[Main steps of chaining and between-\mem alignment in the \puffaligner]
@@ -925,7 +926,7 @@ By only aligning the read's sub-sequences that are not included in the \mems, th
 \begin{itemize}
     \item \textbf{Skipping alignment calculation by recognizing perfect chains and alignment caching:} It is possible to avoid the alignment computation completely in a considerable number of cases. In fact, as has been explained in previous work~\citep{selaln}, the alignment calculation step can be completely skipped if the set of exact matches for each chain covers the whole read. \puffaligner skips alignment for cases where the coverage score of chains of \mems is the length of the read, and assigns a total matched CIGAR string for that alignment. Alignment computation of a read might be also skipped if the same alignment problem has been already detected and computed for this read. For example, in the case of RNA seq data, reads often map to the same exons on different transcripts. In such cases, each alignment solution for a read is stored in a cache (a hash table) so that if the same alignment problem is detected, the solution can be directly retrieved from the cache, and no further computation is required (see~\cref{tab:skipped-alignments}).
 
-    \begin{table}[h!]
+    \begin{table}%[h!]
     \centering
     \begin{tabular}{lcccc}
         \toprule sample & Cache Hits & Perfect Chains & None Alignable & Total Skipped \\
@@ -1102,7 +1103,7 @@ which is mostly dominated by the size of the index, is significantly smaller tha
 Although \debga's index is based on the \dbgs, similar to the \pufferfish index, the particular encoding for 
 it is not as space-efficient as that of \pufferfish.
 
-\begin{table}[h!]
+\begin{table}%[h!]
     \centering
     \begin{tabular}{lccc}
         \toprule aligner & mapping-rate$(\%)$ & time (mm:ss) & memory (GB) \\
@@ -1118,10 +1119,12 @@ it is not as space-efficient as that of \pufferfish.
         \label{Tab:dnaseq-exp}
 \end{table}
 
-\begin{figure}[H]
+\begin{figure}
     \centering
-    \includegraphics[width=0.4\linewidth,, trim={0in 0in 0in 0in},clip]
-    {Figures/puff/ERR013103_trimmed_gencode_3tools_sparse_resubmission.pdf}
+    \scalebox{0.5}{
+%    \includegraphics[width=0.4\linewidth,, trim={0in 0in 0in 0in},clip]
+    \includegraphics[trim={0in 0in 0in 0in},clip]
+    {Figures/puff/ERR013103_trimmed_gencode_3tools_sparse_resubmission.pdf}}
     \caption[Upset plots for comparing the alignments - reads agreement]
     {Caomparing the alignments in terms of 
     agreement of the alignments found by different tools for each read.}
@@ -1129,8 +1132,10 @@ it is not as space-efficient as that of \pufferfish.
 \end{figure}
 \begin{figure}
     \centering
-    \includegraphics[width=0.4\linewidth, trim={0in 0in 0in 0in},clip]
-    {Figures/puff/ERR013103_trimmed_gencode_3tools_sparse_resubmission_location.pdf}
+    \scalebox{0.5}{
+%    \includegraphics[width=0.4\linewidth, trim={0in 0in 0in 0in},clip]
+    \includegraphics[trim={0in 0in 0in 0in},clip]
+    {Figures/puff/ERR013103_trimmed_gencode_3tools_sparse_resubmission_location.pdf}}
     \caption[Upset plots for comparing the alignments - location agreement]
     {Caomparing the alignments in terms of 
     agreement of the alignments found by different tools based on the location of the mappings.}
@@ -1171,8 +1176,9 @@ samples with different variation rates ranging from $1e-7$ to $1e-3$. Each sampl
 Illumina reads of $100$bp length from chromosome 21 of the human genome, ensembl release 98
 \footnote{ftp://ftp.ensembl.org/pub/release-98/fasta/homo\_sapiens/dna/}. 
 
-\begin{figure}[H]
-    \includegraphics[width=\textwidth,type=pdf,ext=.pdf,read=.pdf]{Figures/puff/DNAseq-sim-chr21-SV-prec}
+\begin{figure}%[H]
+    \scalebox{0.8}{
+    \includegraphics[width=\textwidth,type=pdf,ext=.pdf,read=.pdf]{Figures/puff/DNAseq-sim-chr21-SV-prec}}
     \caption[Accuracy of aligners in the presence of variations in the reference - precision]
     {Comparing the accuracy of aligners in the presence of different rates of variations in the reference genome
     in terms of the precision of the alignments reported by each aligner. 
@@ -1181,8 +1187,9 @@ Illumina reads of $100$bp length from chromosome 21 of the human genome, ensembl
     (alignments with larger edit distance than the alignment to the original location) 
     and the non-compatible reads that are aligned with high ($>25$) edit distance.}
 \end{figure}
-\begin{figure}[H]
-    \includegraphics[width=\textwidth,type=pdf,ext=.pdf,read=.pdf]{Figures/puff/DNAseq-sim-chr21-SV-recall}
+\begin{figure}%[H]
+    \scalebox{0.8}{
+    \includegraphics[width=\textwidth,type=pdf,ext=.pdf,read=.pdf]{Figures/puff/DNAseq-sim-chr21-SV-recall}}
     \caption[Accuracy of aligners in the presence of variations in the reference - recall]
     {Comparing the accuracy of aligners in the presence of different rates of variations in the reference genome
     in terms of the ratio of the alignments in the true SAM file that are recovered by each aligner. 
@@ -1403,7 +1410,7 @@ in this experiment~\cref{tab:single-alignment-accuracy}.
 We further demonstrate the positive impact of this option on the
 alignment of bulk metagenomic samples in the next section.
 
-\begin{table}[h!]
+\begin{table}%[h!]
     \centering
     \begin{tabular}{l|l|cccc}
         \toprule
@@ -1541,9 +1548,9 @@ regardless of the difference between the abundance of the references. In
 this case, one misclassified read has the same impact on the MAE metric
 both for a high-abundance and low-abundance reference.
 
-\begin{table}[h!]
+\begin{table}%[h!]
     \centering
-    \scalebox{0.9}{
+    \scalebox{0.8}{
     \begin{tabular}{l|l|p{2cm}|cccc}
         \toprule
         \parbox[c]{3cm}{Accession ID} & \parbox[c]{0.8cm}{Alignment Mode} &\parbox[c]{2cm}{Tool}
@@ -1668,7 +1675,7 @@ sensitive and fast aligner. Specifically~\puffaligner exhibits similar
 accuracy (and is sometimes more accurate) as well-known aligners like \bt and \st. 
 On these data, it exhibits memory requirements close to those of the memory-frugal \bt, 
 while being much faster.
-\begin{figure}[H]
+\begin{figure}%[H]
     \centering
     \subfloat[] 
     {\includegraphics[width=0.8\columnwidth, type=png,ext=.png,read=.png]
@@ -1702,7 +1709,7 @@ while being much faster.
 
 
 \subsection{Scalability}
-\begin{figure}[h!]
+\begin{figure}%[h!]
     \centering
     \includegraphics[width=0.8\columnwidth,type=pdf,ext=.pdf,read=.pdf]
     {Figures/puff/indexSizeScale}
@@ -1713,7 +1720,7 @@ while being much faster.
     random bacterial complete genomes). All tools are run with 16 threads.}
     \label{sfig:size}
 \end{figure}
-\begin{figure}[h!]
+\begin{figure}%[h!]
     \includegraphics[width=0.8\columnwidth,type=pdf,ext=.pdf,read=.pdf]
     {Figures/puff/indexTimeScale}
     \caption[scalability of different aligners - time]
