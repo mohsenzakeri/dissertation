@@ -44,15 +44,20 @@
 \newcommand{\Sla}{Selective-alignment\xspace}
 \newcommand{\sla}{selective-alignment\xspace}
 \newcommand{\ssla}{selective\xspace}
-\newcommand{\qm}{\textit{quasi-mapping}\xspace}
-\newcommand{\Qm}{\textit{Quasi-mapping}\xspace}
+\newcommand{\qm}{quasi-mapping\xspace}
+\newcommand{\Qm}{Quasi-mapping\xspace}
 \newcommand{\pa}{pseudoalignment\xspace}
 \newcommand{\eqclass}[1]{\ensuremath{\left[#1\right]}\xspace}
 \newcommand{\eqlabel}[1]{\ensuremath{\text{\texttt{lab}}\left(#1\right)}\xspace}
 \newcommand{\eqcount}[1]{\ensuremath{\text{\texttt{count}}\left(#1\right)}\xspace}
-\newcommand{\kmer}{$k$-mer\,\,}
-\newcommand{\kmers}{$k$-mers\,\,}
-\newcommand{\Kmers}{$K$-mers\,\,}
+\newcommand{\kmer}{$k$-mer\xspace}
+\newcommand{\kmers}{$k$-mers\xspace}
+\newcommand{\Kmer}{$K$-mer\xspace}
+\newcommand{\Kmers}{$K$-mers\xspace}
+% \newcommand{\kmer}{$k$-mer\,\,}
+% \newcommand{\kmers}{$k$-mers\,\,}
+% \newcommand{\Kmer}{$K$-mer\,\,}
+% \newcommand{\Kmers}{$K$-mers\,\,}
 \newcommand{\kmerNS}{$k$-mer\xspace}
 \newcommand{\kmersNS}{$k$-mers\xspace}
 \newcommand{\dbg}{de Bruijn graph\xspace}
@@ -154,13 +159,17 @@
 \newcommand{\mem}{MEM\xspace}
 \newcommand{\mems}{MEMs\xspace}
 \newcommand{\unimem}{uni-MEM\xspace}
+\newcommand{\Unimem}{Uni-MEM\xspace}
 \newcommand{\unimems}{uni-MEMs\xspace}
+\newcommand{\Unimems}{Uni-MEMs\xspace}
 \newcommand{\unitig}{unitig\xspace}
 \newcommand{\unitigs}{unitigs\xspace}
 \newcommand{\uni}{Uni\xspace}
 
 \newcommand{\eqc}{equivalent class\xspace}
 \newcommand{\eqcs}{equivalent classes\xspace}
+\newcommand{\Eqc}{Equivalent class\xspace}
+\newcommand{\Eqcs}{Equivalent classes\xspace}
 \newcommand{\gib}{Gibbs\xspace}
 \newcommand{\gibbs}{Gibbs sampling\xspace}
 \newcommand{\boots}{Bootstrap sampling\xspace}
@@ -169,6 +178,8 @@
 \newcommand{\aboot}{augmented Bootstrap\xspace}
 \newcommand{\pboot}{positional Bootstrap\xspace}
 \newcommand{\pboots}{positional Bootstrap sampling\xspace}
+\newcommand{\Pboot}{Positional Bootstrap\xspace}
+\newcommand{\Pboots}{Positional Bootstrap sampling\xspace}
 \newcommand{\mle}{maximum likelihood estimation\xspace}
 \newcommand{\mles}{maximum likelihood estimations\xspace}
 

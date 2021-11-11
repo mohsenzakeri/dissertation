@@ -9,8 +9,8 @@
 In this chapter, I explore new ideas for improving the alignment and mapping methods. 
 In the first part of the chapter, I address some of the existing obstacles with the 
 lightweight  alignment approaches. These methods are employed in the recent non-alignment 
-based quantfication tools such as salmon~\citep{Patro2017Salmon}, and 
-kallito~\citep{Bray2016Kallisto} to map the RNA-seq reads to the set of known reference 
+based quantfication tools, such as salmon~\citep{Patro2017Salmon} and 
+kallito~\citep{Bray2016Kallisto}, to map the RNA-seq reads to the set of known reference 
 sequences instead of aligning the reads. We show that the accuracy of the lightweight 
 quantification methods decline in the difficult cases which often exist in the real 
 samples. We introduce a new algorithm for selectively aligning RNA-seq reads to a 
@@ -32,13 +32,13 @@ Bioinformatics~\citep{almodaresi2021puffaligner}}
 
 While alignment is a staple of many genomic analyses, it sometimes represents more 
 information than is actually necessary to address the analysis at hand. For example, 
-recent tools like \sailfish~\citep{Patro2014Sailfish}, \rnaskim~\citep{zhang2014rna}, 
+recent tools, like \sailfish~\citep{Patro2014Sailfish}, \rnaskim~\citep{zhang2014rna}, 
 \kallisto~\citep{Bray2016Kallisto}, \salmon~\citep{Patro2017Salmon}, and 
 \fleximer~\citep{ju2017fleximer}, demonstrate that accurate quantification estimates can 
 be obtained without all of the information encoded in traditional alignments. By avoiding 
 traditional alignment procedures, these tools are much faster than their alignment-based 
 counterparts. Furthermore, by building the mapping phase of the analysis directly into the 
-quantification task, they dispense with the need to  write, store, and read, large 
+quantification task, they dispense with the need to  write, store, and read large 
 intermediate alignment files. However, these \nab tools, while highly-efficient, have 
 the disadvantage of potentially losing sensitivity or specificity in certain cases where 
 alignment-based methods would perform well. For example, in the presence of paralogous 
@@ -100,12 +100,12 @@ Below, we recapitulate the basic data structures and concepts that will be requi
 explain the selective alignment algorithm. To start with, the index built on the 
 transcriptome in \sla is a combination of a suffix array and a hash table constructed 
 from unique \kmers (substrings of length $k$) and suffix array intervals. The suffix 
-array of a sequence, $T$--- denoted $SA(T)$---is an array of starting positions of all 
+array of a sequence $T$--- denoted $SA(T)$---is an array of starting positions of all 
 suffixes from $T$ in the original sequence. The values in the array are sorted 
 lexicographically by the suffixes they represent. Therefore, all suffixes starting 
 with the same prefix are located in adjacent positions of the suffix array. Formally, 
-given a suffix array, $SA(T)=\SuffixArray$, constructed from the transcriptome sequence, 
-$T$, we construct a hash table, $h$, that maps each \kmer, \samplekmer, to a suffix array 
+given a suffix array $SA(T)=\SuffixArray$, constructed from the transcriptome sequence 
+$T$, we construct a hash table, $h$, that maps each \kmer \samplekmer to a suffix array 
 interval, $\ival{\samplekmer} = \interval{b}{e}$, if and only if all the suffixes within 
 interval $\interval{b}{e}$ contain the \kmer \samplekmer as a prefix. We define 
 $\SuffixArray[i]$, for every $0\le i \le |\SuffixArray|$, to be the suffix $T[SA[i]]$ 
@@ -116,7 +116,7 @@ common prefix (LCP) of any pair of suffixes in the suffix array is simply the le
 the prefix that these suffixes share. Though the LCPs for the suffixes in the suffix array 
 can be pre-computed, we instead compute them on demand using a linear scan. These methods 
 are detailed below. As an alternate to the suffix array and the LCP array, one could make 
-use of other data structures which also encode this information. For example, the 
+use of other data structures that encode this information. For example, the 
 recently-introduced method, Fleximer ~\citep{ju2017fleximer} makes use of the suffix 
 tree for selecting informative sig-mers~\citep{zhang2014rna} from the transcriptome, and 
 matching reads against them.
@@ -178,7 +178,7 @@ maps (by strictly expanding this set), or the orientation with which it maps to 
 transcriptome.  We denote the \kslcp of a particular interval $\ival{\samplekmer_i}$ 
 as $\mathrm{\texttt{\kslcp}}(\ival{\samplekmer_i})$.
 
-As shown in figure~\cref{fig:safelength}, the \kslcp determination for the top suffix 
+As shown in~\cref{fig:safelength}, the \kslcp determination for the top suffix 
 array interval starts with matching \kmers within the longest common prefix. The 
 \kmer ``CAACG'' maps to a suffix array interval labeled with $(t_1,t_2)$. The next 
 \kmer ``AACGG'', on the other hand, maps to a suffix array interval (shaded in green) 
@@ -187,27 +187,27 @@ each \kmer in the hash table, we store the length of the LCP and \kslcp, along w
 the corresponding suffix array interval.
 
 \subsection{Discovering relevant suffix array intervals}
-As shown in figure~\cref{fig:block_overview}, the selective-alignment approach can be 
+As shown in~\cref{fig:block_overview}, the selective-alignment approach can be 
 broken into three major steps: collecting suffix array intervals, \cm, and selecting 
 the high quality mappings. Gathering the suffix array intervals for a query read closely 
-follows the \qm approach. It involves iterating over the read from left to right and 
+follows the quasi-mapping approach. It involves iterating over the read from left to right and 
 repeating two steps. First, hashing a \kmer from the read sequence and then discovering the 
 corresponding suffix array intervals. The process of \kmer lookup is aided by the \kslcp 
 stored in the index (discussed in~\cref{sec:safelength}). The inbuilt lexicographic ordering 
 of the suffixes in the suffix array, and the computed \kslcp values of intervals enable 
-safely extending k-mers to longer matches without the possibility of masking 
-potentially-informative substring matches. Given a matching \kmer, $\samplekmer_r$, 
+safely extending \kmers to longer matches without the possibility of masking 
+potentially-informative substring matches. Given a matching \kmer $\samplekmer_r$ 
 from the read sequence $r$, we extend the match to find the longest substring of the 
 read that matches within $\mathrm{\texttt{\kslcp}}(\ival{\samplekmer_r})$. The matched 
 substring can be regarded as maximum mappable prefix (MMP)~\citep{Dobin2013Star}, that 
 resides within the established \kslcp. We call this a maximal mappable safe prefix 
-(MMSP --- eliding $k$ where implied). For a \kmer, $\samplekmer_r$, and interval, 
+(MMSP --- eliding $k$ where implied). For a \kmer $\samplekmer_r$ and interval 
 $\interval{b}{e}$, we note that $\mathrm{\texttt{\kslcp}}(\ival{\samplekmer_r}) 
 \geq \length{\MMSP_{\samplekmer_r}}$, where $\length{\MMSP_{\samplekmer_r}}$ is the 
 length of $\MMSP_{\samplekmer_r}$, the MMSP between the read's suffix starting with 
 $\samplekmer_r$ and the interval $\ival{\samplekmer_r}$. The next \kmer lookup starts 
 from the $(\MMSP_{\samplekmer_r}-k+1)$-th position. By restricting our match extensions 
-to reside within the MMSP, we ensure that we will not neglect to query any k-mer that 
+to reside within the MMSP, we ensure that we will not neglect to query any \kmer that 
 might \emph{expand} the set of potential transcripts where our read may map. We note 
 here both the theoretical and practical relation between the \MMSP matching procedure, 
 and the concept of a uni-MEM, as introduced by~\citet{debga}. The \kslcp for suffix array 
@@ -222,7 +222,7 @@ Given all the suffix array intervals collected for a read end (i.e. one end of a
 paired-end read), we take the \emph{union} of all the transcripts they encode. 
 Formally, if  a read $r$ maps to suffix array intervals labeled with $\mathcal{C}^{r_1}, 
 \ldots, \mathcal{C}^{r_n}$, then we consider all transcripts in the set $\mathcal{C}^{r_1} 
-\cup \mathcal{C}^{r_2} \cup \ldots \cup \mathcal{C}^{r_n}$, and the associated positions 
+\cup \mathcal{C}^{r_2} \cup \ldots \cup \mathcal{C}^{r_n}$ and the associated positions 
 implied by the suffix array intervals. As shown in~\cref{fig:block_overview}; 
 this step is done before \cm.
 
@@ -234,7 +234,7 @@ we move forward by a distance of $k/2$ in the read, and check the \kmer from the
 such that the mismatch occurs in the middle position. If this \kmer lookup leads to 
 another suffix array interval, we continue with the MMP extension process there; 
 otherwise, we move again to the first \kmer that does not overlap this mismatch 
-position. We observe that, in practice, the \kslcp, and hence the MMSP lengths can 
+position. We observe that, in practice, the \kslcp, and hence the MMSP lengths, can 
 be quite large (\Cref{fig:dist}).
 
 \subsection{Co-Mapping}
@@ -284,7 +284,8 @@ ends is larger than a given, user-defined threshold ($1,000$ nucleotides by defa
 In \sla, the potential positions on a transcript are scored by their individual coverage on the target transcript.~\Cref{fig:maxCov} depicts the mechanism of choosing the best postion on a transcript from multiple probable mappings to the same transcript. The coverage mechanism employed in \sla makes use of the MMSP lengths collected during a prior step of the algorithm rather than simply counting \kmers. In~\cref{fig:maxCov}, the transcript $t_2$ has two potential mapping positions given the reads: position 10 and 20. The coverage consensus mechanism selects position 20 over position 10 due to the higher coverage by tiling MMSPs on the read.
 
 \subsection{Selecting the best candidate transcripts}
-Once the positional ambiguity within a transcript is resolved, the next step is selecting the best candidate transcripts from a set of mappings. Since mapping relies on finding exact matches, the length of the matched subsequence between the read and reference can sometimes be misguiding when comparing different candidate transcripts. That is, the transcripts with the longest exact matches do not always su A block diagram of the steps described below are depicted in Figure pport optimal alignments for a read.  At this point in our procedure, we follow the approach taken by many conventional aligners, and use an existing optimal alignment algorithm to compute the edit distance, by which we select the best candidate transcripts.
+Once the positional ambiguity within a transcript is resolved, the next step is selecting the best candidate transcripts from a set of mappings. Since mapping relies on finding exact matches, the length of the matched subsequence between the read and reference can sometimes be misguiding when comparing different candidate transcripts. 
+That is, the transcripts with the longest exact matches do not always su A block diagram of the steps described below are depicted in Figure pport optimal alignments for a read.  At this point in our procedure, we follow the approach taken by many conventional aligners, and use an existing optimal alignment algorithm to compute the edit distance, by which we select the best candidate transcripts.
 
 When performing alignment, we assume that a given read aligns starting at the position computed in the previous steps.  This helps us to reduce the search space within the transcript where we must consider aligning the read, and thereby considerably reduces the cost of alignment. To align the read at a specific position on the transcript and calculate the edit distance between them, we use $Myer's$ bounded edit distance bit-vector algorithm~\citep{myers1999fast}, as implemented in \texttt{edlib}~\citep{edlib}.  For a fixed maximum allowable edit distance, this algorithm is linear in the length of the read. We note that the bounded edit distance algorithm we employ will automatically terminate an alignment when the required edit distance bound is not achievable.
 
@@ -335,9 +336,9 @@ To evaluate the effectiveness of \sla, we coupled it with the quantification too
 release). This enables us to measure the effect of different alignment based and non-alignment based algorithms on 
 transcript-level quantification results directly, holding the statistical estimation procedure fixed. We also include 
 \kallisto(v0.43) in our benchmarks, which provides a perspective on \pa-based quantification. Furthermore, we compare 
-the performance of \sla with the recent, fast, hashing and alignemnt-based, abundance estimation tool (currently un-published) 
+the performance of \sla with the recent, fast, hashing and alignment-based, abundance estimation tool (currently un-published) 
 \hera~\footnote{\url{https://github.com/bioturing/hera}}. We note, this is an early version of the \hera(v1.2) software, 
-which is already performing very well in our testing, but is subject to changes and improvements. Given it's impressive 
+which is already performing very well in our testing, but is subject to changes and improvements. Given its impressive 
 performance (in both time and accuracy), we decided to include \hera in our comparisons with the consent of its authors 
 (personal communications). We measure the Spearman correlation and Mean Absolute Relative Differences (MARD) of read 
 counts as performance metrics when comparing the different methods.
@@ -365,7 +366,7 @@ parameter.
 We explored the performance of different alignment-based and alignment-free methods by quantifying simulated short 
 RNA-seq reads against mutated reference sequences. The simulation process consists of two steps. In the first step, 
 we mapped an experimental RNA-seq sample (accession number SRR5638585) to the human transcriptome (Ensembl release 
-80 \citep{yates2015ensembl} ) using \salmon. The resulting abundance vector, in conjunction with the full 
+80 \citep{yates2015ensembl}) using \salmon. The resulting abundance vector, in conjunction with the full 
 transcriptome sequence generated from the full human genome and the corresponding annotations (version GRCh37.p13), 
 is used to simulate five batches of 100bp paired-end RNA-seq samples, where each batch contains $\sim47$M reads. 
 We used the sequence simulator Polyester \citep{frazee2015polyester} for generating the read datasets.
@@ -577,7 +578,7 @@ applications that require this information, such as RNA-seq based variant callin
 \section[Puffaligner]{Puffaligner: An efficient and accurate aligner based on the pufferfish index}
 Short-read aligners are a major workhorse of modern genomics. Given the importance of the alignment problem, 
 a tremendous number of different tools have been developed to tackle this problem. Some widely used examples are
-\bwa~\citep{bwa}, \bt~\citep{bowtie2}, \hisat~\citep{hisat,hisat2} and \st~\citep{star}.
+\bwa~\citep{bwa}, \bt~\citep{bowtie2}, \hisat~\citep{hisat,hisat2} and \st~\citep{Dobin2013Star}.
 Existing alignment tools use a variety of indexing methods. Some tools, such as \bwa, \bt, and \st
 use a full-text index over the reference sequences; \bwa and \bt use variants of the FM-index, 
 while \st uses a suffix array.
@@ -665,7 +666,7 @@ of the query sequence and the \unitig sequence vector. Each \unimem can appear  
 and since \unimems must be completely contained within a \unitig, it is possible for multiple 
 \unimems to be directly adjacent on both the query and some references where the \unitig appears.
 
-\paragraph{\unimem collection:}
+\paragraph{\Unimem collection:}
 The first step in read alignment is to collect exact matches shared
 between the query (single-end or paired-end reads) and the reference.
 In \puffaligner, this is accomplished by collecting the set of
@@ -688,7 +689,7 @@ the \unimem extension terminates because the end of the query is
 reached, or because the last \kmer of the query is searched in the index.
 Here, we recall an important property of \unimem extension that is
 different from e.g. \mem extension or maximum mappable prefix (MMP)
-extension~\citep{star}. Due to the definition of the \ccdbgshort, it
+extension~\citep{Dobin2013Star}. Due to the definition of the \ccdbgshort, it
 is guaranteed that any \kmer appearing within a \unimem cannot appear
 in any other unintig in the \ccdbgshort. Thus, extending \kmers to
 maximal \unimems is, in some sense, safe with respect to greedy
@@ -1003,7 +1004,7 @@ paired-end mapping for the fragment, then orphan alignments are reported by \puf
 
 For measuring the performance of \puffaligner and comparing it to other aligners, we have designed a 
 series of experiments using both simulated and experimental data from different sequencing assays. We compare 
-\puffaligner with \bt~\citep{bowtie2}, \st~\citep{star} and \debga~\citep{debga}. \bt is a popular, sensitive 
+\puffaligner with \bt~\citep{bowtie2}, \st~\citep{Dobin2013Star} and \debga~\citep{debga}. \bt is a popular, sensitive 
 and accurate aligner with the benefit of having very modest memory requirements. \st requires a much larger 
 amount of memory, but is much faster than \bt and can also perform ``spliced alignment" against a reference 
 (which \puffaligner, \bt, and \debga currently do not allow). \debga, is most-related tool to \puffaligner 
