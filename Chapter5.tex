@@ -15,30 +15,30 @@ lightweight methods while maintaining their efficiency.
 In~\cref{chapt2}, we introduced selective-alignment as a new algorithm for efficiently
 aligning the reads to the reference transcriptome. This approach increases both sensitivity
 and specificity of quasi-mapping. Selective-alignment increases the sensitivity by performing
-safe skips for querying each \kmer in the reference. It also relaxes other constraints
+safe skips for querying each \kmer and relaxing other constraints
 imposed on merging the mappings discovered for a read. It also introduces the concept of
-co-mapping for further refining the candidate mappings. Selective-alignment also computes
-an alignment score for each mapping to filter spurious hits further. The alignment-score
-could also be used in the quantification step to improve the accuracy of the estimations.
+co-mapping for further refining the candidate mappings. Selective-alignment computes
+an alignment score for each mapping to filter spurious hits further. Using the alignment-score
+in the quantification step improves the accuracy of the estimations.
 We show that selective-alignment improves the accuracy of the quantification with lightweight
 methods without sacrificing the performance.
  
 Furthermore, we have introduced \puffaligner in~\cref{chapt2}. \puffaligner is built on top
 of the \pufferfish index, which is an efficient \ccdbg base index of a collection of reference
 sequences. \puffaligner is a multi-purpose aligner that can be utilized for aligning DNA-seq,
-RNA-seq, and metagenomic reads. \puffaligner finds high-quality alignments for short reads,
-which are similar to those discovered by accurate tools, e.g., \bt, in a significantly shorter amount
+RNA-seq, and metagenomic reads. \puffaligner finds high-quality alignments for short reads 
+similar to those discovered by accurate tools, e.g., \bt, in a significantly shorter amount
 of time.
  
 We have investigated the effect of the factorization of the likelihood employed
 by lightweight RNA-seq quantification tools on the accuracy of the estimations. These tools
-treat all the fragments (reads) which are mapped to the same set of reference sequences as identical
+treat all the fragments (reads) mapping to the same set of reference sequences as identical
 and represent all the fragments compatible with the same set of transcripts as one equivalence class 
 in the likelihood function.
 This factorization approximates the likelihood function because of the differences in the
 characteristics of each fragment in an equivalence class, e.g., different fragment length and alignment 
 compatibilities lead to different conditional probabilities.
-I have proposed an improved factorization in ~\cref{chapt3} which groups the fragments
+I have proposed an improved factorization in ~\cref{chapt3} that groups the fragments
 in an equivalence class that is not only similar in terms of the set of transcripts by which they are 
 compatible but also similar in terms of the conditional probabilities to those
 set of transcripts. We observed that this improved factorization leads to greater accuracy of
@@ -56,10 +56,14 @@ estimation.
  
 \section{Future Work}
  
-Most RNA-seq quantification tools rely on the generative model proposed by~\cite{Li2010RSEM}, which 
-we have discussed in detail throughout this dissertation. A shortcoming of this model is that
+Most RNA-seq quantification tools rely on the generative model proposed by \rsem~\citep{Li2010RSEM}.
+% discussed in detail throughout this diesseration.
+% Throughout this dissertation we discussed in detail about the the generative model 
+% for RNA-seq quantification which was proposed by~\citep{Li2010RSEM} 
+% and most RNA-seq quantification tools rely on.
+A shortcoming of this model is that
 it assumes the set of reference sequences against which we are quantifying is complete and that all 
-the fragments in the sample come from one of the transcripts in the reference. RSEM~\cite{Li2010RSEM} 
+the fragments in the sample come from one of the transcripts in the reference. \rsem 
 tries to address this issue by including an extra transcript as the noise transcript to which all the 
 fragments not aligned to any other transcripts would map. However, based on how the reference transcripts
 are created by alternative splicing, there might exist a fragment that is completely compatible with
@@ -69,11 +73,11 @@ in one of the existing transcripts. Such fragments possibly lead to coverage ano
 present in the reference, which is completely ignored by the generative model of RNA-seq quantification.
  
 Recently, different post quantification analyses have been proposed to detect and possibly fix such
-coverage anomalies. For instance, in a recent paper~\cite{ma2019detecting}, the authors develop a method for
+coverage anomalies. For instance, in a recent paper~\citep{ma2019detecting}, the authors develop a method for
 detecting anomalies in the coverages of transcripts in the RNA-seq quantification results. As they state,
 such anomalies could be evidence of misquantification of transcripts. They try to resolve the anomalies by
-moving around reads between transcripts which they map to obtain results with less expression of anomalies
-while still maintaining a high likelihood. This study also suggests that the cases where the anomalies could
+moving around reads between transcripts to which they map, to obtain results with fewer expression anomalies
+while maintaining a high likelihood. This study also suggests that the cases where the anomalies could
 not be resolved by simply transferring reads between the existing transcripts could indicate some mis-annotated
 transcripts in the reference transcriptome.
  

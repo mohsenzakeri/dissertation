@@ -58,8 +58,8 @@
 % \newcommand{\kmers}{$k$-mers\,\,}
 % \newcommand{\Kmer}{$K$-mer\,\,}
 % \newcommand{\Kmers}{$K$-mers\,\,}
-\newcommand{\kmerNS}{$k$-mer\xspace}
-\newcommand{\kmersNS}{$k$-mers\xspace}
+% \newcommand{\kmerNS}{$k$-mer\xspace}
+% \newcommand{\kmersNS}{$k$-mers\xspace}
 \newcommand{\dbg}{de Bruijn graph\xspace}
 \newcommand{\dbgs}{de Bruijn graphs\xspace}
 \newcommand{\cdbg}{compacted De Bruijn graph\xspace}
@@ -67,24 +67,29 @@
 \newcommand{\ccdbgshort}{ccdBg\xspace}
 \newcommand{\ccdbg}{colored compacted de Bruijn graph\xspace}
 
+\newcommand{\polyester}{\emph{Polyester}\xspace}
 \newcommand{\sailfish}{\emph{Sailfish}\xspace}
 \newcommand{\rapmap}{\emph{RapMap}\xspace}
 \newcommand{\kallisto}{\emph{kallisto}\xspace}
 \newcommand{\Kallisto}{Kallisto\xspace}
 \newcommand{\rsem}{\emph{RSEM}\xspace}
-\newcommand{\puffaligner}{PuffAligner\xspace}
-\newcommand{\pufferfish}{Pufferfish\xspace}
-\newcommand{\bwa}{BWA\xspace}
-\newcommand{\st}{STAR\xspace}
-\newcommand{\salmon}{Salmon\xspace}
-\newcommand{\debga}{deBGA\xspace}
-\newcommand{\brownie}{BrownieAligner\xspace}
-\newcommand{\mason}{Mason\xspace}
+\newcommand{\puffaligner}{\emph{PuffAligner}\xspace}
+\newcommand{\pufferfish}{\emph{Pufferfish}\xspace}
+\newcommand{\bwa}{\emph{BWA}\xspace}
+%\newcommand{\st}{STAR\xspace}
+\newcommand{\st}{\emph{STAR}\xspace}
+\newcommand{\salmon}{\emph{Salmon}\xspace}
+\newcommand{\debga}{\emph{deBGA}\xspace}
+\newcommand{\Ddebga}{\emph{DeBGA}\xspace}
+\newcommand{\brownie}{\emph{BrownieAligner}\xspace}
+\newcommand{\mason}{\emph{Mason}\xspace}
 \newcommand{\isoem}{\emph{IsoEM}\xspace}
 \newcommand{\mmseq}{\emph{mmseq}\xspace}
+\newcommand{\Mmseq}{\emph{Mmseq}\xspace}
 \newcommand{\bitseq}{\emph{BitSeq}\xspace}
 \newcommand{\tigar}{\emph{Tigar}\xspace}
 \newcommand{\express}{\emph{eXpress}\xspace}
+%\newcommand{\Express}{\emph{EXpress}\xspace}
 \newcommand{\hera}{\emph{Hera}\xspace}
 \newcommand{\fleximer}{\emph{Fleximer}\xspace}
 \newcommand{\rnaskim}{\emph{RNAskim}\xspace}
@@ -92,11 +97,16 @@
 \newcommand{\STAR}{\emph{STAR}\xspace}
 \newcommand{\bt}{\emph{Bowtie2}\xspace}
 \newcommand{\btie}{\emph{Bowtie}\xspace}
-\newcommand{\ksw}{KSW2\xspace}
-\newcommand{\kr}{Kraken2\xspace}
-\newcommand{\br}{Bracken\xspace}
+\newcommand{\ksw}{\emph{KSW2}\xspace}
+\newcommand{\kr}{\emph{Kraken2}\xspace}
+\newcommand{\br}{\emph{Bracken}\xspace}
 \newcommand{\cufflinks}{\emph{Cufflinks}\xspace}
 \newcommand{\rsemsim}{\emph{RSEM-sim}\xspace}
+\newcommand{\bgreat}{\emph{BGreat}\xspace}
+\newcommand{\vari}{\emph{Vari}\xspace}
+\newcommand{\cortex}{\emph{Cortex}\xspace}
+\newcommand{\rainbowfish}{\emph{Rainbowfish}\xspace}
+\newcommand{\mantis}{\emph{Mantis}\xspace}
 
 \newcommand{\fragments}{\ensuremath{\mathcal{F}}\xspace}
 \newcommand{\frag}[1]{\ensuremath{f_{#1}}\xspace}

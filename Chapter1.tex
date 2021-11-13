@@ -64,14 +64,17 @@ The number of reads generated from each isoform of a gene depends on the
 gene's level of expression in the cell. Each gene consists of encoding 
 segments called exons. Each transcript or isoform of a gene consists of 
 a set of particular exons. To illustrate the alternative splicing, consider 
-the example in~\cref{fig:altsplice} which shows two different isoforms of 
+the example in~\cref{fig:altsplice} that shows two different isoforms of 
 $gene_a$ which is a gene with three exons. Different splicing events can 
 lead to new combinations of exons in each isoform, e.g., $t_1$ and $t_2$ 
 are two isoforms generated from $gene_a$, each containing specific subset 
-of exons of $gene_a$.
-The number of reads mapping to specific exons and exon junctions indicate 
-the expression level of the isoforms containing those exons. According to 
-sequence similarities in different genes or exons shared between different 
+of exons of $gene_a$. While in rare cases, i.e., back-splicing, the order
+of the exons can be changed in the isoforms, generally we expect to see the same
+ordering of the exons in the isoforms as in the genes.
+The number of reads mapping to specific exons and exon junctions
+is proportional to the expression level of the isoforms containing those exons. 
+As more copies of an isoform exist in the sample, more reads map to it.
+According to sequence similarities in different genes or exons shared between different 
 isoforms of a gene, a read may map to multiple isoforms in the transcriptome, 
 this ambiguity makes abundance estimation challenging. An example of reads 
 generated from different isoforms of a gene in RNA-seq experiments is displayed 
@@ -84,9 +87,9 @@ e.g., the green-blue read in~\cref{fig:altsplice} spans the red and green
 exons which suggest the existence of an isoform containing these two exons 
 next to each other, i.e., $t_2$. In this example, $t_1$ and $t_2$ are the 
 known isoforms (also called transcripts) of the gene $gene_a$. In an RNA-seq 
-experiment reads might be generated which do not map to any known isoforms of 
+experiment reads might be generated that do not map to any known isoforms of 
 genes, e.g., the gray reads mapping to the intronic gray region of $gene_a$ 
-in~\cref{fig:altsplice} or green-gray read which maps to the exon-intron 
+in~\cref{fig:altsplice} or green-gray read that maps to the exon-intron 
 junction. Presence of such reads could be evidence for discovering new exons 
 or isoforms of $gene_a$, or preserved intronic regions in the isoforms (intron 
 retention). Finding evidence for novel isoforms or intron retention events is 
@@ -103,17 +106,17 @@ an important advantage of RNA-seq assay over alternative sequencing techniques.
 \end{figure}
 
 In the following sections of this chapter I review the existing tools which 
-are widely used for alignment (computing the compatibility of the reads to 
+are widely used for alignment (computing the edit distance of the reads to 
 the reference sequences) and quantification (estimating the expression ratio 
 of the isoforms) of RNA-seq samples. Both of these steps greatly affect the 
 accuracy of the downstream analysis in RNA-seq 
 pipelines~\citep{srivastava2019alignment}. In chapter 2, 
-I present a fast mapping technique called \sla which is built 
-alongside \qm to achieve a higher sensitivity which results in more 
+we present a fast mapping technique called \sla~\citep{selaln}. This technique is built 
+alongside \qm to achieve a higher sensitivity that results in more 
 accurate abundance estimates. Chapter 2 also introduces a new tool for 
 computing alignment of DNA-seq and RNA-seq reads to known reference sequences. 
 In chapter 3, an improved factorization of the quantification likelihood 
-function is presented which  maintains a high fidelity to the underlying 
+function is presented that maintains a high fidelity to the underlying 
 data and will result in higher confidence for more fine grained analysis 
 of transcripts. 
 % In chapter 4 the future work for my PhD research will be 
@@ -131,7 +134,7 @@ pipeline. The main goal of this step is to find, for each read, the region on
 the reference genome (or transcriptome) from which it is originally fragmented. 
 The length of each short RNA-seq read is usually between 100 and 200 bases, 
 while the length of the latest human genome is about three billion bases. The goal, 
-for each read, is  to find a substring in the reference sequences which best 
+for each read, is  to find a substring in the reference sequences that best 
 matches the read. Often it is not possible to find an exact match for a read 
 because of the variations present in the samples with respect to the reference 
 sequences. The variations are divided into two main types, variations introduced 
@@ -139,27 +142,35 @@ by technical errors or the biological variations existing in each new sample.
 Therefore, the alignment procedure most of the time results in an inexact 
 match for each read rather than a region which exactly matches the read. 
 In order to find the most compatible regions in the reference sequences to 
-each read, we should define the compatibility of two sequences. The compatibility 
-is measured by the number of edits required to convert one sequence to the 
+each read, we should define the edit distance between two sequences.
+%compatibility of two sequences. The compatibility is measured by 
+The edit distance is proportional to the number of edits required to convert one sequence to the 
 other one. Different types of edits, such as substitutions and insertions/deletions,  
 are considered.% which are substitution, insertion and deletion. 
+The sequence of edits can be shown in the form of \texttt{CIGAR} strings.
+\texttt{CIGAR} strings are a sequence of operators to be applied in the first sequence
+to be converted into the other one. 
 The penalties assigned to each type of edit can be 
 different and are usually configurable in most aligners. The sum of 
 all the penalties is considered to be the edit distance between two sequences.
 Therefore, we can define the alignment problem as finding the region on the 
-reference with the minimum edit distance to each read. This can be achieved 
+reference with the minimum edit distance to each read. 
+This can be achieved 
 by classical algorithms, such as Smith-Waterman~\citep{smith1981identification}, 
 in $O(n*m)$ time and $O(n*m)$ space, where $n$ and $m$ are the length of the 
 reference sequence and the read sequence respectively. This task becomes 
 super expensive when the length of reference sequences and the number of read 
 sequences are very large which is common in RNA-seq experiments. 
 Therefore, a number of methods have been developed to accelerate this procedure 
-while maintaining the accuracy of Smith-Waterman. In the following sections, 
-some of the common approaches will be discussed briefly.
+while maintaining the accuracy of Smith-Waterman. 
+It's important to note that the best alignment (with the highest alignment score)
+for a read on the reference is not necessarily unique. So, it is important for an aligner to 
+find all such alignments that are likely to be where the read originates from.
+In the following sections, some of the common approaches will be discussed briefly.
 
 \subsection{The main approaches for computing read alignments}
 One of the most common approaches for accelerating the alignment problem is 
-“seed and extend”. The seeds are supposed to reduce the search space for the 
+``seed and extend''. The seeds are supposed to reduce the search space for the 
 alignment problem into smaller regions that are most likely to include a 
 reasonable alignment for the queried read rather than comparing each read 
 sequence to all the reference sequences. Seeds are often shorter than the 
@@ -168,44 +179,45 @@ region in reference. The seeds are later extended into full alignments for
 the read by computing the full alignment of the reads to the regions 
 identified by each read.
 
-Finding the seeds requires pre-processing the reference sequences 
-which is called the indexing step. Different indexing strategies are used 
-in different aligners which have various space and time requirements. There 
+Finding the seeds requires pre-processing the reference sequences called the indexing step. 
+Different indexing strategies 
+have various space and time requirements that are used in different aligners. There 
 are two main types of indices, full-text indices and hash-based indices. 
 The full-text indices are often smaller in size, and a sequence of any different 
 size can be queried in them, while the hash-based indices take more space and 
 only accept queries with a fixed size. The main benefit of the hash-based indices 
 are their speed compared to the full text indices. Full text indices are used in 
-popular RNA-seq aligners, such as Bowtie~\citep{bowtie}, Bowtie2~\citep{bowtie2}, 
-BWA~\citep{bwamem} and STAR \citep{Dobin2013Star}. It is worth noting that STAR’s 
-index employs a hybrid approach of both full text and hash-based indices which 
+popular RNA-seq aligners, such as \btie~\citep{bowtie}, \bt~\citep{bowtie2}, 
+\bwa~\citep{bwamem}, and \st~\citep{Dobin2013Star}. It is worth noting that index of \st 
+employs a hybrid approach of both full text and hash-based indices which 
 results in being faster at the expense of larger memory requirements. 
-Other aligners, such as deBGA~\citep{debga} and Minimap2~\citep{minimap2}, are based 
-on hash-based indices. \Kmers of a string are defined as all the substrings 
-of length k in the string.
-These aligners index all the \kmers of the reference sequence, then,
-search \kmers from the reads into the index to find the alignment seeds.
+Other aligners, such as deBGA~\citep{debga} and Minimap2~\citep{minimap2}, use 
+hash-based indices to find the seeds for the alignment.
+% \Kmers of a string are defined as all the substrings 
+% of length k in the string.
+% These aligners index all the \kmers of the reference sequence, then,
+% search \kmers from the reads into the index to find the alignment seeds.
 %as the first step of the alignment step. 
-Querying a \kmer into the index results in 
-finding all the locations on the reference sequences where the \kmer exists.
+% Querying a \kmer into the index results in 
+% finding all the locations on the reference sequences where the \kmer exists.
 
 FM-index and Suffix Array are two closely related full text indices. The suffix 
 Array (SA) of a string $S$ with the length $n$ is defined by the sorted order of all 
-suffixes of string S concatenated with a terminal character which is 
+suffixes of string $S$ concatenated with a terminal character that is 
 lexicographically smaller than all other characters in the alphabet. 
 Adding the terminal character ($\$$) ensures that no suffix is the prefix of any 
-other suffix in S. In practice, the suffix array stores only the indices 
+other suffix in $S$. In practice, the suffix array stores only the indices 
 corresponding to each suffix in an array. If pattern p exist in the string S, 
 then, it will be a prefix of some suffix in S. Lexicographically sorting the 
-suffixes in SA, provides this property that all suffixes which include some 
-pattern p as their prefix, will appear in consecutive rows in the SA. Therefore, 
-to query a pattern in S, it suffices to find an interval [a,b) in the SA which 
-are all the suffixes that include p as their prefix. Each pattern can be searched 
-in the SA by a binary search, which takes $O(log(|S|)x|p|)$. The search process can 
+suffixes in SA, provides this property that all suffixes with the same 
+pattern $p$ as their prefix, will appear in consecutive rows in the SA. Therefore, 
+to query a pattern in $S$, it suffices to find an interval [a,b) in the SA which 
+are all the suffixes that include $p$ as their prefix. Each pattern can be searched 
+in the SA by a binary search with the order $O(log(|S|)x|p|)$. The search process can 
 be enhanced by keeping some extra information like the longest common prefix 
 (LCP) lengths for some pair of suffixes, as a result the query time will be 
-$O(log|S|+|p|)$ instead. STAR is one of the most popular aligners which use the 
-Suffix Array to index the reference sequences~\citep{Dobin2013Star}. STAR uses some hash tables 
+$O(log|S|+|p|)$ instead. \st is one of the most popular aligners which use the 
+Suffix Array to index the reference sequences~\citep{Dobin2013Star}. \st uses some hash tables 
 for accelerating the search process as well which comes at the cost of increasing 
 the index size.
 
@@ -218,24 +230,25 @@ in the BWT. Using the succinct data structures, this can be stored in $O(|S|)$
 space. One other useful characteristic of the BWT is that it tends to put 
 repetitions of each character next two each other, this doesn’t mean that all 
 repetitions are put next to each other, but it is common to find longer 
-substrings of A or any other character in the BWT of a sequence compared to the original sequence. This property of the BWT makes it more compressible compared to the original sequence which results in smaller index size. 
-Bowtie, Bowtie2, and BWA are popular aligners that index the reference sequences with a FM-Index.
+substrings of A or any other character in the BWT of a sequence compared to the original sequence. 
+This property of the BWT makes it more compressible compared to the original sequence which results in smaller index size. 
+\btie, \bt, and \bwa are popular aligners that index the reference sequences with a FM-Index.
 
 The other main type of indices used for finding the alignment of a query in a 
 large set of reference sequences are hash-based indices. Hash-based indices use 
 substrings of a fixed size from the reference sequence to search each new query. 
-The substrings of length k from the reference sequences are called \kmers. 
+The substrings of length $k$ from a string are called \kmers of the string. 
 \Kmers constitute the keys in the hash-based indices. Hash-based indices store 
 the location where each \kmer occurs in the reference sequences. During the 
 query time, we are able to extract all the \kmers from each read and query 
 those in the set of keys of the hash-based index. The index will then 
-retrieve all the positions each \kmer occurs in the reference which will 
+retrieve all the positions each \kmer occurs in the reference that will 
 later play the role of the seeds for the seed and extend procedure. It is 
-important to note that queries of length smaller than k cannot be made into 
+important to note that queries of length smaller than $k$ cannot be made into 
 these hash-based indices, so one drawback of these types of indices is that in 
 order to find a seed for the query  in the reference, there needs to be at 
 least one substring of length $k$ in the read which matches the reference sequences 
-with an edit distance of zero. Therefore, the length of k should be carefully 
+with an edit distance of zero. Therefore, the length of $k$ should be carefully 
 selected based on the error rate of the sequencing technology, so that with high 
 probability at least one match from each read is found on the reference, if the 
 read is actually originating from a position on the reference sequences.
@@ -252,17 +265,17 @@ read is actually originating from a position on the reference sequences.
 \end{figure}
 
 Another approach for indexing all the \kmers of a set reference sequence is to 
-build the \dbg. Each \kmer forms an edge in the de Bruijn graph between the 
-prefix and suffix k-1 mers which it consists of. In the~\cref{fig:dbg}, a \dbg 
-is shown which is built from the sequence S = “ACCCTTGCCCGC” and the k 
-equal to 3. One main property in the de Bruijn graph is that every \kmer 
+build the \dbg. Each \kmer forms an edge in the \dbg between the 
+prefix and suffix k-1 mers that it consists of.~\Cref{fig:dbg} shows a \dbg 
+built from the sequence $S = ACCCTTGCCCGC$ and the $k$ 
+equal to 3. One main property in the \dbg is that every \kmer 
 appears exactly once in the graph. This property helps to reduce the redundancy 
-of repeats which usually exist in the DNA and RNA sequences. The compacted 
-de Bruijn graph is built after compacting the non branching paths from the 
-original de Bruijn graph, as shown in the~\cref{fig:dbg}. The length of the 
-nodes in the compacted de Bruijn graph might be larger than k-1, but still 
+of repeats that usually exist in the DNA and RNA sequences. The \cdbg
+is built after compacting the non-branching paths from the 
+original \dbg, as shown in the~\cref{fig:dbg}. The length of the 
+nodes in the \cdbg might be larger than k-1, but still 
 each \kmer appears at most once in the graph (either as an edge or as a 
-substring in one node). If the de Bruijn graph is built from multiple 
+substring in one node). If the \dbg is built from multiple 
 sequences (e.g., the set of human transcripts, or a collection of microbial 
 genomes), one is interested to know in which reference sequences each \kmer 
 appears. A \kmer might appear in multiple reference sequences due to shared 
@@ -273,19 +286,23 @@ A colored \dbg stores this data for each \kmer (edge) of the graph as the color
 information. For example, in the case of the transcriptome, each color represents 
 the set of transcripts in which the \kmer corresponding to that edge exists. 
 \Kmers appearing in the same set of transcripts (e.g., due to shared exons) 
-will have the same colors. A contig in the \cdbg is a non branching path in 
-the graph, and if the edges are colored, not all the \kmers in a contig might 
+will have the same colors. A \unitig in the \cdbg is a non-branching path in 
+the graph, and if the edges are colored, not all the \kmers in a \unitig might 
 have the same color.
-If all the \kmers that are part of a non branching path also have the same color 
-set assigned, those \kmers can be combined together and form a unitig in the 
+If all the \kmers that are part of a non-branching path also have the same color 
+set assigned, those \kmers can be combined together and form a \unitig in the 
 \ccdbg.
 
-Pufferfish~\citep{pufferfish} is a space and time efficient index built on 
-top of the compacted colored de Bruijn graph. So, it can be used to perform 
+\pufferfish~\citep{pufferfish} is a space and time efficient index built on 
+top of the \ccdbg. So, it can be used to perform 
 efficient \kmer queries from each read sequence to large transcriptomic or 
-genomic references. In the second chapter of this manuscript, we introduce 
-Puffaligner which uses the Pufferfish index to query \kmers from the short 
-RNA-seq reads to compute read alignments through the seed and extend strategy.
+genomic references. 
+% In the second chapter of this manuscript, we introduce 
+% \puffaligner which uses the \pufferfish index to query \kmers from the short 
+% reads to compute read alignments through the seed and extend strategy.
+We used \pufferfish index to develop \puffaligner.
+\puffaligner queries the \kmers from the read into the \pufferfish
+index, which contain all the reference sequences, to find the seeds for alignment.
 
 \subsection{Alignment Free Approaches for Mappings reads}\label{int:qm}
 Exploiting the methods of abundance estimation for RNA-seq reads revealed the 
@@ -304,8 +321,8 @@ for performing quantification over multiple samples to the same reference, the
 index needs to be built only once.
 
 The first lightweight algorithm for mapping reads to reference transcripts was 
-introduced in \sailfish \citep{Patro2014Sailfish}. \sailfish is an alignment-free 
-quantification tool which builds an index over all subsequences of size k from the 
+introduced in \sailfish~\citep{Patro2014Sailfish}. \sailfish is an alignment-free 
+quantification tool that builds an index over all subsequences of size $k$ from the 
 reference, called \kmers. The \sailfish index consists of a perfect hash function 
 mapping each \kmer in the reference to a unique integer, an array indicating the 
 counts of each \kmer, an index mapping each \kmer to the set of transcripts 
@@ -315,22 +332,22 @@ of \kmers it contains. In the quantification step, \sailfish explores all the
 reference. So instead of mapping the whole reads, \sailfish only maps the \kmers, 
 and uses their count for each transcript as evidence for the relative expression 
 of the transcripts. Although approach of \sailfish is 30 times faster than fastest 
-quantification tools which perform alignment upstream of quantification, 
+quantification tools that perform alignment upstream of quantification, 
 it suffers from increased ambiguity of a large rate of multi-mapping \kmers, 
-which sometimes reduces the accuracy of abundance estimation. The smaller k size 
-causes a higher multi-mapping rate, while the larger size of the k results in 
+which sometimes reduces the accuracy of abundance estimation. The smaller $k$ size 
+causes a higher multi-mapping rate, while the larger size of the $k$ results in 
 less robustness to sequencing errors because each \kmer is mapped with no error 
 using the perfect hash function.
 
 The idea of mapping \kmers instead of the whole reads to reference transcriptome 
 introduces a huge improvement in the speed of quantification tools. However, 
-it is sub-optimal to only consider occurrence of subsequences of size k as 
+it is sub-optimal to only consider occurrence of subsequences of size $k$ as 
 evidence of expression while the observed data is of larger length. Hence, 
 the developers of \sailfish introduced a new idea for mapping the whole reads 
 using the perfect hash function of \kmers by benefiting from the suffix array 
-data structure. The new mapping approach is called \Qm \citep{Srivastava2016rapmap} 
+data structure. The new mapping approach is called \Qm~\citep{Srivastava2016rapmap} 
 and is utilized in the newer version of \sailfish software and also in the new 
-quantification tool called \salmon \citep{Patro2017Salmon}. 
+quantification tool called \salmon~\citep{Patro2017Salmon}. 
 
 The suffix array of a sequence is a sorted array of all of the suffixes of the sequence. 
 Therefore, all suffixes starting with the same prefix are located in adjacent 
@@ -348,8 +365,8 @@ of the read (existing in the hash table) are hashed to find SA intervals. It is
 often possible to extend a match between the query and a subset of rows of the SA 
 interval. The \qm algorithm attempts to find the longest subsequence of the query 
 starting with the $k_i$ as a prefix in the interval (also called maximum mappable 
-prefix of $k_i$ ($MMP_i$) \citep{Dobin2013Star}) with a binary search, as the SA 
-is sorted lexicographically.
+prefix of $k_i$ ($MMP_i$)~\citep{Dobin2013Star}) with a binary search, as the SA 
+is sorted lexicographically.~\citep{Srivastava2016rapmap}
 \Qm retrieves a set of transcripts for each \kmer, the transcripts appearing 
 in all sets are reported as mapping candidates for the read. The reverse 
 complement of the read is also mapped and the sequence (either forward or 
@@ -361,13 +378,13 @@ end reads.
 
 It has been demonstrated that \qm finds very high quality mappings which result 
 in highly-accurate abundance estimations. However, there are different aspects of 
-the algorithm which can be modified in order to retrieve mappings with higher 
+the algorithm that can be modified in order to retrieve mappings with higher 
 specificity and sensitivity. In fact, this idea is presented in chapter 2 as 
 \sla. \Qm extends the \kmer matches by the MMP length in order to find legitimate 
 matches for queries. However, if an extension is not possible and no other \kmer 
 match exists in the read, \qm may report all transcripts of the interval as the 
 mapping candidates for the read. These low quality matches introduce a number 
-of spurious mappings. A filtering process shall be introduced in order to filter 
+of spurious mappings. A new filtering process was introduced in order to further filter 
 the spurious hits in this case. Other than suffering from spurious mappings \qm 
 could also miss true mappings of the read in rare cases where errors are 
 positioned adversarially on the read. An obvious case of losing the true mapping 
@@ -384,23 +401,27 @@ not be the best possible matching of the read to that transcript. To address
 these challenges in \qm, \sla is introduced as a new lightweight approach to 
 achieve both higher sensitivity and specificity than \qm.
 
-A similar approach to \qm is employed in \kallisto \citep{Bray2016Kallisto} 
-called \pa. \kallisto index consists of a colored deBruijn graph from reference 
+A similar approach to \qm is employed in \kallisto~\citep{Bray2016Kallisto} 
+called \pa. \Kallisto index consists of a colored \dbg from reference 
 where nodes are \kmers and each node receives the colors of transcripts in which 
-it appears. The contigs in the graph are formed from the linear stretches of the 
+it appears. The \unitigs in the graph are formed from the linear stretches of the 
 nodes (\kmers) with identical sets of colors. \Kallisto also maintains a hash 
-table mapping each \kmer to the contig it is contained in and the position of the \kmer 
-in the contig. Using this index, the reads' \kmers are mapped to contigs. Since 
-all the \kmers appearing in the same contig receive the same set of colors, and 
-therefore the same transcripts, the rest of the \kmers in the contig can be 
+table mapping each \kmer to the \unitig it is contained in and the position of the \kmer 
+in the \unitig. Using this index, the reads' \kmers are mapped to \unitigs. Since 
+all the \kmers appearing in the same \unitig receive the same set of colors, and 
+therefore the same transcripts, the rest of the \kmers in the \unitig can be 
 skipped for mapping, similar to the idea of skipping to 
 the next informative position (NIP) in \qm.
 
 \section{Abundance estimation of the transcriptome}
 In this section, we formalize the problem of abundance estimation with RNA-seq 
-reads according to the model laid out by~\citet{Li2010RSEM}. There are $M$ 
+reads according to the model laid out by \rsem~\citep{Li2010RSEM}. There are $M$ 
 transcript types in transcriptome $T$, $t_1, t_2, ..., t_M$. In a given sample 
 there are $c_i$ copies of transcript type $t_{i}$, which are not observed directly.
+Existence of more copies of a transcript indicates its higher expression in the sample
+compared to other transcripts, which is generally proportional to the number of 
+proteins generated from that transcript. Therefore, quantification of transcriptome
+is used as an indicator for the expression level of proteins as well.
 
 \subsection{The generative model of a sequencing experiment}
 %\label{subsec:likelihood}
@@ -420,22 +441,22 @@ assuming independence for drawing each fragment, the likelihood of the underlyin
 transcript abundances, $\theta$, can be written as:
 
 \begin{equation}
-  \likelihood{\bm{\theta}; \fragments} = \prod_{f_i \in \fragments}  
-  \sum_{j=1}^{M} \Pr\left(t_j \mid \bm{\theta}\right) 
-  \Pr\left( f_i \mid t_j \right).
+  \likelihood{\bm{\theta}; \fragments} = \prod_{f_j \in \fragments}  
+  \sum_{j=1}^{M} \Pr\left(t_i \mid \bm{\theta}\right) 
+  \Pr\left( f_j \mid t_i \right).
   \label{eqn:likelihood_fm1}
 \end{equation}
 
-The conditional probability of drawing a particular fragment $f_i$, given 
-transcript $t_j$, $\Pr{(f_i|t_j)}$, is particularly critical for reaching 
+The conditional probability of drawing a particular fragment $f_j$, given 
+transcript $t_i$, $\Pr{(f_j|t_i)}$, is particularly critical for reaching 
 accurate estimates and is derived from mapping information.  This term encodes, 
 given parameters of the model and experiment, how likely it is to observe a 
-specific fragment $f_i$ arise from transcript $t_j$.
+specific fragment $f_j$ arise from transcript $t_i$.
 Many terms can be included in such a conditional probability, 
 some common terms include:
 
 \begin{equation}
-  \Pr\left( \fraglen{i} \mid f_i, t_j\right) = \frac{\Pr_D\left( \fraglen{i}\right)}{\sum_{k=1}^{\tilde{l}_j} \Pr_D\left( k \right)},
+  \Pr\left( \fraglen{j} \mid f_j, t_i\right) = \frac{\Pr_D\left( \fraglen{j}\right)}{\sum_{k=1}^{\tilde{l}_i} \Pr_D\left( k \right)},
   \label{eqn:pr_len1}
 \end{equation}
 
@@ -445,7 +466,7 @@ is the probability of observing a fragment of length $k$ under the empirical
 fragment length distribution $D$;
 
 \begin{equation}
-  \Pr\left( p_i \mid \fraglen{i}, f_i, t_j\right) = \frac{1}{l_j - \fraglen{i} + 1},
+  \Pr\left( p_j \mid \fraglen{i}, f_j, t_i\right) = \frac{1}{l_i - \fraglen{j} + 1},
   \label{eqn:pr_start1}
 \end{equation}
 
@@ -455,22 +476,23 @@ derived from $\txp{j}$;
 
 \begin{equation}
   \Pr\left( o_i \mid \frag{i}, \txp{j} \right)  = 
-      \begin{cases}
+  \begin{cases}
     \begin{cases}
       0.5 
     \end{cases}
-    & \text{if unstranded}\\
+    & \text{if the library is unstranded}\\
     \begin{cases}
-      1.0 & \text{if compatible orientation} \\
+      1.0 - \epsilon & \text{if compatible orientation} \\
       \epsilon & \text{if incompatible orientation}
-    \end{cases} &\text{if strand-specific}
-      \end{cases},
+    \end{cases} &\text{if the library is strand-specific}
+  \end{cases},
   \label{eqn:orient1}
 \end{equation}
 
 the probability of observing a mapping with a specific orientation $o_j$ 
 (i.e., forward or antisense) with respect to the underlying transcript for 
-$\frag{j}$, given $\txp{i}$, $\epsilon$ (a user-defined constant), and knowledge of the underlying protocol, 
+$\frag{j}$, given $\txp{i}$, $\epsilon$ (a user-defined constant), and knowledge 
+of the underlying protocol, 
 and
 
 \begin{equation}
@@ -497,34 +519,37 @@ scale of RNA-seq data. Local optimization methods, like expectation
 maximization (EM), are often applied to fit the best parameters in the model. 
 The parameters of the model indicate the rate of expression for each transcript 
 in the underlying samples. The EM approach is employed by both alignment based 
-tools such as \rsem \citep{Li2010RSEM}, \mmseq~\citep{Turro2011Haplotype}, and
+tools such as \rsem~\citep{Li2010RSEM}, \mmseq~\citep{Turro2011Haplotype}, and
 \isoem~\citep{Nicolae2011Estimation}, and also non-alignment based tools, e.g., 
-\sailfish \citep{Patro2014Sailfish}, \salmon \citep{Patro2017Salmon}, and 
-\kallisto \citep{Bray2016Kallisto}. 
+\sailfish~\citep{Patro2014Sailfish}, \salmon~\citep{Patro2017Salmon}, and 
+\kallisto~\citep{Bray2016Kallisto}. 
 
 \begin{algorithm}[H]
 \SetAlgoLined
-\KwData{transcriptome $T$, fragment set $\fragments$,conditional properties 
-$ \Pr{(f_i|t_j)}$ for fragment transcript pairs}
- \KwResult{$\theta$, relative abundance of transcripts}
-  uniform initialization\;
- \While{not converged}{
- \For{$t_i \in T$}{
-  $\alpha_i = 0$,  $\theta_i = \frac{1}{|T|}$ 
- }
-\textcolor{blue}{E-step:} \\
-
-\For{$f_i \in \fragments$}{
- $sum = \sum_{t_k \in T}{\theta_k \times  \Pr{(f_i|t_k)}}$\\
- \For{$t_j \in T$}{
-    $\alpha_j += \frac{\theta_j \times  \Pr{(f_i|t_j)}}{sum}$
- }
+\KwData{$T = \{t_i\}$,
+        $\fragments = \{f_j\}$,
+        $\Pr{(f_j|t_i)}$ for all fragment transcript pairs, \\
+        $\elength{i} = \length{i}-\mu$,
+        where $\mu$ is the mean of the empirical fragment length distribution
+        and $\length{i}$ is the length of the transcript $t_i$.}
+\KwResult{$\theta$, relative abundance of transcripts}
+\textcolor{blue}{Uniform initialization:}\\
+\For{$t_i \in T$}{
+  $\alpha_i \leftarrow 0$, $\theta_i \leftarrow \frac{1}{|T|}$ 
 }
-\textcolor{blue}{M-step:} \\
-$sum = \sum_{t_k \in T}{\frac{\alpha_k}{\tilde{l_k}}}$\\
- \For{$t_i \in T$}{
-$ \theta_i = \frac{\alpha_i/\tilde{l_i}}{sum}$
-} 
+\While{not converged}{
+  \textcolor{blue}{E-step:} \\
+  \For{$f_j \in \fragments$}{
+  $sum \leftarrow \sum_{t_k \in T}{\theta_k \times  \Pr{(f_j|t_k)}}$\\
+    \For{$t_i \in T$}{
+      $\alpha_i \leftarrow \alpha_i + \frac{\theta_i \times  \Pr{(f_j|t_i)}}{sum}$
+    }
+  }
+  \textcolor{blue}{M-step:} \\
+  $sum \leftarrow \sum_{t_k \in T}{\frac{\alpha_k}{\tilde{l_k}}}$\\
+  \For{$t_i \in T$}{
+    $ \theta_i \leftarrow \frac{\alpha_i/\tilde{l_i}}{sum}$, $\alpha_i \leftarrow 0$
+  } 
 }
 \caption{Overview of the EM algorithm for optimizing the generative model}
  \label{EM-alg}
@@ -537,15 +562,15 @@ Using these expectations, alongside effective lengths the prior probability of
 observing each transcript type is obtained in the M-step. This iterative process 
 is repeated until the convergence on $\theta$ values is reached. 
 
-If a transcript $t_j$ is not present in the set of transcripts to which 
-fragment $f_i$ is mapped, the  value of $\Pr{(f_i|t_j)}$ is equal to zero. 
-The EM updates can benefit from the sparsity of $\Pr{(f_i|t_j)}$ matrix by 
-only performing updates in the E-step for the set of transcripts that $f_i$ maps 
-to instead of the whole set of transcripts. Hence, if $\Omega{(f_i)}$ is the set 
-of compatible transcripts with read $f_i$, in algorithm~\ref{EM-alg}, the line 8 
+If a transcript $t_i$ is not present in the set of transcripts to which 
+fragment $f_j$ is mapped, the  value of $\Pr{(f_j|t_i)}$ is equal to zero. 
+The EM updates can benefit from the sparsity of $\Pr{(f_j|t_i)}$ matrix by 
+only performing updates in the E-step for the set of transcripts that $f_j$ maps 
+to instead of the whole set of transcripts. Hence, if $\Omega{(f_j)}$ is the set 
+of compatible transcripts with read $f_j$, in algorithm~\ref{EM-alg}, the line 8 
 shall be modified to : 
-$sum = \sum_{t_k \in \Omega{(f_i)}}{\theta_k \times  \Pr{(f_i|t_k)}}$\  
-and the loop iteration in line 9 to :   $t_j \in \Omega{(f_i)}$.
+$sum = \sum_{t_k \in \Omega{(f_j)}}{\theta_k \times  \Pr{(f_j|t_k)}}$\  
+and the loop iteration in line 9 to :   $t_i \in \Omega{(f_j)}$.
 
 \subsection{Factorizations of the likelihood function}\label{int:fact}
 
@@ -558,23 +583,23 @@ number of updates as the number of fragments grows.
  
 If a set $F'$ of fragments exactly map to the same set $T'$ of transcripts 
 with the same conditional probabilities (meaning that for each pair 
-$f_i,f_j \in F'$, $\Omega{(f_i)}=\Omega{(f_j)}=T'$ and the equation 
-$\Pr{(f_i|t_k)}=\Pr{(f_j|t_k)}$ holds for all $t_k \in T'$), then all 
+$f_a,f_b \in F'$, $\Omega{(f_a)}=\Omega{(f_b)}=T'$ and the equation 
+$\Pr{(f_a|t_k)}=\Pr{(f_b|t_k)}$ holds for all $t_k \in T'$), then all 
 fragments in $F'$ are exactly equivalent, and they result in the same update rule 
 in the EM iterations. Hence, they can be grouped together to apply the update once 
-for all such fragments. This factorization, which is introduced by 
-\isoem \citep{isoem}, maintains full fidelity to information regarding fragment 
+for all such fragments. The factorization introduced by 
+\isoem~\citep{isoem}, maintains full fidelity to information regarding fragment 
 mappings to transcripts because all fragments in a group are identical.
 
 A more popular approach for factorizing the likelihood is employed by 
-\mmseq \citep{Turro2011Haplotype} and also later in alignment-free tools 
-like \sailfish \citep{Patro2014Sailfish}, \salmon \citep{Patro2017Salmon} 
-and \kallisto \citep{Bray2016Kallisto}. \mmseq introduced a notion of fragment 
+\mmseq~\citep{Turro2011Haplotype} and also later in alignment-free tools 
+like \sailfish~\citep{Patro2014Sailfish}, \salmon~\citep{Patro2017Salmon} 
+and \kallisto~\citep{Bray2016Kallisto}. \Mmseq introduced a notion of fragment 
 equivalence classes, which treats as equivalent any fragments that map to the 
 same set of transcripts. Unlike \isoem, the equivalence notion does not depend 
 on the values of conditional probabilities.  According to this definition, every 
 set of fragments like $\Frags^q$ such that for all 
-$f_i,f_j \in \Frags^q$, $\Omega{(f_i)}=\Omega{(f_j)}=\Omega{(\Frags^q)}$, 
+$f_a,f_b \in \Frags^q$, $\Omega{(f_a)}=\Omega{(f_b)}=\Omega{(\Frags^q)}$, 
 form an equivalence class with the label $\Omega{(\Frags^q)}$. 
 Define $N^q=|\Frags^q|$ to be the number of fragments in class $\Frags^q$. 
 Then, the likelihood function based on these equivalence classes, can be 
@@ -585,15 +610,15 @@ approximated as:
         \prod_{\eqclass{q} \in \eqclasses}
         \left(\sum_{\langle i, t_i \rangle \in \mapset{\eqclass{q}}} 
         \Prob{\txp{i}}{\bm{\theta}} 
-        \cdot \Prob{f}{\eqclass{q},\txp{i}} \right)^{\eqsize{q}},
+        \cdot \Prob{f_q}{\eqclass{q},\txp{i}} \right)^{\eqsize{q}},
 \label{eqn:likelihood_fact}
 \end{equation}
 
 where $\eqclasses$ is the set of all equivalence classes, and
-$\Prob{f}{\eqclass{q},\txp{i}}$ is the probability of generating a fragment $f$
+$\Prob{f_q}{\eqclass{q},\txp{i}}$ is the probability of generating a fragment $f_q$
 given that it comes from equivalence class $\eqclass{q}$ and transcript
 $\txp{i}$. The key to the efficiency of likelihood evaluation (or optimization)
-under this factorization, is that the probability $\Prob{f}{\eqclass{q},\txp{i}}$ 
+under this factorization, is that the probability $\Prob{f_q}{\eqclass{q},\txp{i}}$ 
 is assumed to be identical for each of the $\eqsize{q}$
 fragments in each equivalence class $\eqclass{q}$---hence, we do not
 subscript $f$ in~\cref{eqn:likelihood_fact}. This allows one to replace the
@@ -602,13 +627,15 @@ a product over all equivalence classes in \cref{eqn:likelihood_fact}.
 The approximation, of course, stems from the fact that, under the full model, 
 a fragment $\frag{j}$ may have a probability 
 $\Prob{\frag{j}}{\txp{i}}$ that is arbitrarily different
-from $\Prob{f}{\eqclass{q},\txp{i}}$. Moreover, the most common approximations,
+from $\Prob{f_q}{\eqclass{q},\txp{i}}$, where $f_q$ represents
+all the fragments in equivalence class $\eqclass{q}$ which are assumed to be identical.
+ Moreover, the most common approximations,
 like those adopted in \mmseq, \sailfish, and \kallisto consider this
 probability to be fixed and essentially independent of any fragment-level
 information (e.g., it is set to one divided by the effective
 length of $\txp{i}$).
 
-After applying any factorization which groups a set of fragments together 
+After applying any factorization to group a set of fragments together 
 in equivalence classes $\Frags^q$, the fragments in the EM iteration can 
 be substituted with equivalence classes (groups) and each update would 
 increase the $\alpha$ values based on the number of fragments in each 
@@ -620,7 +647,7 @@ in algorithm \ref{EM-alg} is displayed in algorithm \ref{EM-alg2}.
 \For{$\Frags^q \in \eqclasses$}{
  $sum = \sum_{t_k \in \Omega{(\Frags^q)}}{\theta_k \times  \Pr{(f|\Frags^q,t_k)}}$
  \\
- \For{$t_j \in \Omega{(\Frags^q)}$}{
+ \For{$t_i \in \Omega{(\Frags^q)}$}{
     $\alpha_j += \frac{\theta_k \times  \Pr{(f|\Frags^q,t_k)}}{sum}$
  }
 }
@@ -633,9 +660,9 @@ in algorithm \ref{EM-alg} is displayed in algorithm \ref{EM-alg2}.
 
 The conditional probability values are stored in memory during the EM iterations 
 in order to avoid expensive I/O operations and re-computation in each EM round. 
-If no factorization is used, for each existing mapping pair $f_i$ and $t_j$, 
+If no factorization is used, for each existing mapping pair $f_j$ and $t_i$, 
 a value is stored. This makes the memory requirement scale with the number of 
-mappings. \express \citep{Roberts2013Express} attempts to bound the memory 
+mappings. \express~\citep{Roberts2013Express} attempts to bound the memory 
 requirement by benefiting from an online-EM algorithm rather than a batch-EM. 
 An online-EM consists of a single iteration over all fragments in the sample, 
 updating $\alpha$ values once for each fragment. Fragments are not stored in 
@@ -647,7 +674,7 @@ of an alignment tool for mapping reads to transcripts to run the online phase.
 Again, here the mapping information shall limit the number of updates performed 
 for each fragment. 
 
-\express applies a modified version of online updates which prevents the 
+\express applies a modified version of online updates to prevent the 
 algorithm from performing updates for each transcript in each iteration. 
 The online update rules for each fragments are:
 \begin{equation}
@@ -656,7 +683,7 @@ The online update rules for each fragments are:
 \end{equation}
 where:
 \begin{equation}
-\tilde{\tau}^i_t =\Pr{(T=t|F=f_i)},
+\tilde{\tau}^i_t =\Pr{(T=t|F=f_j)},
 \label{eqn:online2}
 \end{equation}
 and
@@ -674,7 +701,7 @@ all $N$, fragments the relative counts of fragments from each transcript type
 can be obtained from the vector $\alpha^N$.
 
 \subsection{Dual phase optimization}
-The inference algorithm in \salmon \citep{Patro2017Salmon} consists of two phases. 
+The inference algorithm in \salmon~\citep{Patro2017Salmon} consists of two phases. 
 First, \salmon runs an online EM optimization to obtain high quality primary 
 estimates of abundances. In this phase, \salmon is able to achieve a good 
 estimation of fragment length distribution by examining many fragments as 
@@ -735,7 +762,7 @@ the DE genes with a higher precision compared to other approaches.
 There are two main approaches for sampling the posterior distribution for estimating the 
 uncertainty of quantification estimates; \gibbs and \boots. 
 The \gibbs is a Markov chain Monte Carlo (MCMC) procedure
-which walks through the space that the EM explores for finding the \mles of the transcripts expressions.
+that walks through the space that the EM explores for finding the \mles of the transcripts expressions.
 At the end of each iteration of the \gibbs, the transcript expression vector could be identified
 as a new inferential replicate for estimating the posterior distribution. To decrease between
 replicate correlations, the sampling could take place after every fixed number of iterations which
@@ -747,7 +774,7 @@ of transcripts in the sample increases the convergance usually takes longer.
 
 % talk about bootstrap sampling
 \boots is the other main approach for estimating the posterior distribution of the abundance
-estimations in RNA-seq. The bootstrap procedure \citep{efron1979computers} is a widely-used 
+estimations in RNA-seq. The bootstrap procedure~\citep{efron1979computers} is a widely-used 
 and computationally straightforward procedure for calculating measures of accuracy of an 
 estimator. It works by resampling (with replacement) from the observed data, and treating 
 these as population samples. The procedure has been used in many contexts for non-parametric 
@@ -760,6 +787,6 @@ sampling by resampling the \eqc counts. \Eqcs are a summerized representations o
 therefore, sampling the \eqc counts instead of each individual read improves the efficiency 
 of the \boots. \Pboots is also another way of generating \boot replicates by sampling the 
 positions where the reads map to on each transcript~\citep{xiong2016probabilistic}.
-Furthermore, the RNA-seq quantification tool, Salmon~\citep{salmon} also includes a \gibbs
+Furthermore, the RNA-seq quantification tool, \salmon~\citep{salmon} also includes a \gibbs
 procedure for estimating the posterior distribution.  Bitseq~\citep{glaus2012identifying} 
 applies a MCMC \gib sampler to generate samples from the posterior probabilty distribution. 

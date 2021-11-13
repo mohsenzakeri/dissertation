@@ -9,7 +9,7 @@
 In this chapter, I explore new ideas for improving the alignment and mapping methods. 
 In the first part of the chapter, I address some of the existing obstacles with the 
 lightweight  alignment approaches. These methods are employed in the recent non-alignment 
-based quantfication tools, such as salmon~\citep{Patro2017Salmon} and 
+based quantfication tools, such as \salmon~\citep{Patro2017Salmon} and 
 kallito~\citep{Bray2016Kallisto}, to map the RNA-seq reads to the set of known reference 
 sequences instead of aligning the reads. We show that the accuracy of the lightweight 
 quantification methods decline in the difficult cases which often exist in the real 
@@ -23,7 +23,7 @@ alignment to introduce Puffaligner~\citep{almodaresi2021puffaligner}, an all pur
 aligner for short read sequencing reads which can be used in many cases ranging from 
 alignment of RNA-seq, DNA-seq and metagenomic samples to known set of references. 
 Puffaligner indexes the reference sequences using the Pufferfish index~\citep{pufferfish} 
-which efficiently indexes the \cdbg built from the reference sequences.\footnote{This is 
+which efficiently indexes the \ccdbg built from the reference sequences.\footnote{This is 
 a joint project with Fatemeh Almodaresi and is published in 
 Bioinformatics~\citep{almodaresi2021puffaligner}}
 
@@ -59,10 +59,10 @@ read might be lost from the set of potential mapping loci due to the greedy natu
 the mapping procedures. For some reads, multiple positions might be found on the same 
 transcript where the read maps. In such cases, improved heuristics are required to address 
 these challenges. In this section, we present a novel algorithm, \sla, that extends 
-quasi-mapping to compute and store edit distance information where necessary. The reads 
+\qm to compute and store edit distance information where necessary. The reads 
 for alignment are chosen based on certain criteria calculated during mapping.  This strikes 
-a balance between speed and accuracy; not compromising the superior speed of \nab 
-algorithms, while also addressing some of the challenges mentioned above. Specifically, 
+a balance between speed and accuracy, i.e., it does not compromise the superior speed of \nab 
+algorithms and also addresses some of the challenges mentioned above. Specifically, 
 the motivation for \sla is to enhance both the sensitivity and specificity of fast mapping  
 algorithms by reducing or eliminating cases where spurious exact matches mask true mapping 
 locations as well as cases where small exact matches support otherwise poor alignments. 
@@ -77,14 +77,17 @@ aligners do not. We do this by making a number of modifications to the underlyin
 algorithm to increase its sensitivity.  We also introduce multiple filters and scoring 
 schemes designed to eliminate spurious mappings (i.e., situations where the best mapping 
 is unlikely to represent the true origin of the read). In this work, we focus on the effect 
-of selective-alignment on transcript quantification estimates, and we leave a thorough 
-evaluation of the alignment qualities themselves as future work. In particular, the 
-evaluation of alignment qualities is considerably complicated due to prevalent 
-multi-mapping in the transcriptome.
+of selective-alignment on transcript quantification estimates. 
+We also perform a further evaluation of the alignment qualities in~\cref{puffal}.
+% In particular, the evaluation of alignment qualities is considerably complicated due to prevalent 
+% multi-mapping in the transcriptome.
+% we leave a thorough 
+% evaluation of the alignment qualities themselves as future work. 
 
 \subsection{Main characteristics of \sla}
 
-The process of \sla builds upon the basic data structures of~\citet{Srivastava2016rapmap}, 
+The process of \sla builds upon the basic data structures of 
+\rapmap~\citep{Srivastava2016rapmap}, 
 but there are a number of important algorithmic distinctions. Specifically, compared to 
 the algorithm of RapMap, \sla introduces the k-safe longest common prefix (\kslcp), 
 replaces maximum mappable prefixes (MMP) with maximum mappable safe prefixes (MMSP), 
@@ -190,7 +193,7 @@ the corresponding suffix array interval.
 As shown in~\cref{fig:block_overview}, the selective-alignment approach can be 
 broken into three major steps: collecting suffix array intervals, \cm, and selecting 
 the high quality mappings. Gathering the suffix array intervals for a query read closely 
-follows the quasi-mapping approach. It involves iterating over the read from left to right and 
+follows the \qm approach. It involves iterating over the read from left to right and 
 repeating two steps. First, hashing a \kmer from the read sequence and then discovering the 
 corresponding suffix array intervals. The process of \kmer lookup is aided by the \kslcp 
 stored in the index (discussed in~\cref{sec:safelength}). The inbuilt lexicographic ordering 
@@ -210,11 +213,11 @@ from the $(\MMSP_{\samplekmer_r}-k+1)$-th position. By restricting our match ext
 to reside within the MMSP, we ensure that we will not neglect to query any \kmer that 
 might \emph{expand} the set of potential transcripts where our read may map. We note 
 here both the theoretical and practical relation between the \MMSP matching procedure, 
-and the concept of a uni-MEM, as introduced by~\citet{debga}. The \kslcp for suffix array 
-intervals are closely related to the lengths of unipaths in the reference de Bruijn 
-graph of order $k$. Thus, our procedure for finding \MMSP{s}, that limits match 
+and the concept of a uni-MEM, as introduced in \debga~\citep{debga}. The \kslcp for suffix array 
+intervals are closely related to the lengths of \unitigs in the reference \ccdbg of order $k$. 
+Thus, our procedure for finding \MMSP{s}, that limits match 
 extension by the \kslcp, is similar to the uni-MEM seed generation procedure described 
-in debga \citep{debga}, with the distinction that in our method, we only consider extending 
+in \debga~\citep{debga}, with the distinction that in our method, we only consider extending 
 seeds in one direction, and that we also choose not to terminate the \kslcp when the set 
 of implied reference transcripts corresponding to the interval decreases in cardinality.
 
@@ -284,18 +287,41 @@ ends is larger than a given, user-defined threshold ($1,000$ nucleotides by defa
 In \sla, the potential positions on a transcript are scored by their individual coverage on the target transcript.~\Cref{fig:maxCov} depicts the mechanism of choosing the best postion on a transcript from multiple probable mappings to the same transcript. The coverage mechanism employed in \sla makes use of the MMSP lengths collected during a prior step of the algorithm rather than simply counting \kmers. In~\cref{fig:maxCov}, the transcript $t_2$ has two potential mapping positions given the reads: position 10 and 20. The coverage consensus mechanism selects position 20 over position 10 due to the higher coverage by tiling MMSPs on the read.
 
 \subsection{Selecting the best candidate transcripts}
-Once the positional ambiguity within a transcript is resolved, the next step is selecting the best candidate transcripts from a set of mappings. Since mapping relies on finding exact matches, the length of the matched subsequence between the read and reference can sometimes be misguiding when comparing different candidate transcripts. 
-That is, the transcripts with the longest exact matches do not always su A block diagram of the steps described below are depicted in Figure pport optimal alignments for a read.  At this point in our procedure, we follow the approach taken by many conventional aligners, and use an existing optimal alignment algorithm to compute the edit distance, by which we select the best candidate transcripts.
+Once the positional ambiguity within a transcript is resolved, the next step 
+is selecting the best candidate transcripts from a set of mappings. 
+Since mapping relies on finding exact matches, the length of the matched 
+subsequence between the read and reference can sometimes be misguiding when 
+comparing different candidate transcripts. 
+That is, the transcripts with the longest exact matches do not always 
+support optimal alignments for a read.  At this point in our procedure, 
+we follow the approach taken by many conventional aligners, and use an 
+existing optimal alignment algorithm to compute the edit distance, by which 
+we select the best candidate transcripts.
+% su A block diagram of the steps described below are depicted in Figure pport optimal alignments for a read.  
+% At this point in our procedure, we follow the approach taken 
+% by many conventional aligners, and use an existing optimal alignment algorithm to 
+% compute the edit distance, by which we select the best candidate transcripts.
 
 When performing alignment, we assume that a given read aligns starting at the position computed in the previous steps.  This helps us to reduce the search space within the transcript where we must consider aligning the read, and thereby considerably reduces the cost of alignment. To align the read at a specific position on the transcript and calculate the edit distance between them, we use $Myer's$ bounded edit distance bit-vector algorithm~\citep{myers1999fast}, as implemented in \texttt{edlib}~\citep{edlib}.  For a fixed maximum allowable edit distance, this algorithm is linear in the length of the read. We note that the bounded edit distance algorithm we employ will automatically terminate an alignment when the required edit distance bound is not achievable.
 
 We remove all alignments with edit distance greater than a user-provided threshold. This is similar to the approach used by many existing aligners, and allows us to specify that even the best mapping for a given read may have too many edits to believe that it reasonably originated from a known transcript in the index. An appropriate threshold should be based on the expected error rate of the instrument generating the sequenced reads, and a very low threshold can lead to a decreased mapping rate.
 
 \subsection{Enhancement of quantification accuracy based on edit distance}\label{filter}
-We investigated the effect of incorporating edit distance in downstream quantification. Since we integrated the \sla scheme into the quantification tool \salmon \citep{Patro2017Salmon}, the edit distance scores from \sla can be used as a new parameter to \salmon{}'s inference algorithm.
+We investigated the effect of incorporating edit distance in downstream quantification. 
+Since we integrated the \sla scheme into the quantification tool \salmon~\citep{Patro2017Salmon}, 
+the edit distance scores from \sla can be used as a new parameter to \salmon{}'s inference 
+algorithm.
 
 %\mohsen{I modified some notations in the following paragraph, please verify if every thing is sound.}
-In the framework of abundance estimation, we define the conditional probability of a generating a particular fragment, $f_j$, given that it comes from a specific transcript, $t_i$, as $P(f_j \mid t_i)$. Given the edit distance between the fragment and the transcript, we can incorporate this parameter into this conditional probability. \emph{Soft} filtering introduces a new term in the conditional probability based on $d_{i,j}$, which is the sum of the edit distances between the read ends of fragment $f_j$ and transcript $t_i$. We set this probability according to an exponential function, $P(a_{j}|f_j,t_i)=e^{-4d_{i,j}}$. The aggregate of threshold filtering and \emph{soft} filtering can be described as follows:\\
+In the framework of abundance estimation, we define the conditional probability of a generating 
+a particular fragment, $f_j$, given that it comes from a specific transcript, $t_i$, as 
+$P(f_j \mid t_i)$. Given the edit distance between the fragment and the transcript, we can 
+incorporate this parameter into this conditional probability.~\citep{Li2010RSEM}
+ \emph{Soft} filtering introduces a new term in the conditional probability based on 
+ $d_{i,j}$, which is the sum of the edit distances between the read ends of fragment $f_j$ and 
+ transcript $t_i$. We set this probability according to an exponential function 
+ $P(a_{j}|f_j,t_i)=e^{-4d_{i,j}}$. The aggregate of threshold filtering and \emph{soft} filtering 
+ can be described as follows:\\
 
 \begin{equation}
 \Pr\left( a_{j} \mid d_{i,j}, \txp{i} \right)  =
@@ -319,13 +345,17 @@ process can be avoided. Note that if the read sequence shares a complete match w
 that maximum mappable safe prefix length is equal to read length (i.e., the read matches the reference exactly 
 at some set of positions), we can also bypass the Meyer's edit distance algorithm call completely.
 
-\paragraph{Avoids redundant work by caching alignment sub-problems further:} We also extend a similar idea to the 
+\paragraph{Avoiding redundant work by caching alignment sub-problems further:} 
+We also extend a similar idea to the 
 scenario where only part of the reference sequence is shared between references.  Specifically, when performing an 
 alignment between anchoring exact matches, we store the result in a hash table where the key is a tuple 
-$\left(i,j,h\left(i', j'\right)\right)$ and the associated value is the computed edit distance.  Here, $i$ 
-and $j$ denote the start and end of the read interval being aligned and $i'$ and $j'$ denote the start and 
-end of the reference sequence; $h(i',j')$ is a hash of the corresponding reference sequence 
-(we use \texttt{xxhash}~\citep{xxhash}).  This allows us to detect when a redundant alignment sub-problem for 
+$\left(s,e,h\left(s', e'\right)\right)$ and the associated value is the computed edit distance.  
+Here, $s$ 
+and $e$ denote the start and end of the read interval being aligned and 
+$s'$ and $e'$ denote the start and 
+end of the reference sequence; $h(s',e')$ is a hash of the corresponding reference sequence 
+(we use \texttt{xxhash}~\citep{xxhash}).  
+This allows us to detect when a redundant alignment sub-problem for 
 a read is shared between references, and to reuse the cached result in such cases.
 
 
@@ -354,22 +384,24 @@ their quantification algorithms). The alignment mode of \salmon enables us to us
 as a direct input to the quantification module --- thereby reducing variability due to differences in the 
 underlying methodology used for quantification. To achieve the most sensitive alignment, \bt is run with the 
 alignment options suggested for use with \rsem~\citep{rsembmc}. For aligning reads to the transcriptome using 
-\STAR, we used the same options described in \citep{Srivastava2016rapmap}. When processing alignments, \salmon 
+\STAR, we used the same options described in~\citep{Srivastava2016rapmap}. When processing alignments, \salmon 
 was run with \texttt{-{}-rangeFactorizationBins 4}~\citep{ismb2017factorization} and \texttt{-{}-useErrorModel}. 
 With \sla, \salmon was run using the \texttt{-{}-softFilter} flag (discussed in~\cref{filter}), 
-a range factorization value of 4 and an edit distance threshold of 7. \kallisto was run with default parameters. 
+a range factorization value of 4 and an edit distance threshold of 7. \Kallisto was run with default parameters. 
 Both the \sla and \kallisto indices were built with $k=25$; \hera does not include \kmer size as a user-defined 
 parameter.
 
 \subsection{Quantification of simulated reads against mutated transcriptomes}\label{subsec:synthetic}
 
 We explored the performance of different alignment-based and alignment-free methods by quantifying simulated short 
-RNA-seq reads against mutated reference sequences. The simulation process consists of two steps. In the first step, 
-we mapped an experimental RNA-seq sample (accession number SRR5638585) to the human transcriptome (Ensembl release 
-80 \citep{yates2015ensembl}) using \salmon. The resulting abundance vector, in conjunction with the full 
+RNA-seq reads against mutated reference sequences. 
+The simulation process consists of two steps. In the first step, 
+we mapped an experimental RNA-seq sample (accession number SRR5638585) 
+to the human transcriptome (Ensembl release 
+80~\citep{yates2015ensembl}) using \salmon. The resulting abundance vector, in conjunction with the full 
 transcriptome sequence generated from the full human genome and the corresponding annotations (version GRCh37.p13), 
 is used to simulate five batches of 100bp paired-end RNA-seq samples, where each batch contains $\sim47$M reads. 
-We used the sequence simulator Polyester \citep{frazee2015polyester} for generating the read datasets.
+We used the sequence simulator \polyester~\citep{frazee2015polyester} for generating the read datasets.
 
 While the simulated dataset enables comparison with the ground truth, the quality of the reads is high and does 
 not show the subtle nuances that arise when mapping reads from experimental sequencing datasets. In reality, the 
@@ -389,7 +421,7 @@ that mapping to these references will capture some aspects of the difficulties e
 to certain experimental datasets.
 
 To evaluate the performance we have measured the quantification accuracy of different tools with respect to the 
-ground truth provided to Polyester. As explained earlier, tools such as \kallisto, \hera and \sla have a 
+ground truth provided to \polyester. As explained earlier, tools such as \kallisto, \hera and \sla have a 
 quantification pipeline attached to the mapping module and are, therefore, capable of generating abundance 
 vectors directly. On the other hand, \bt and \STAR generate alignment files that we have coupled with \salmon 
 (run in alignment-based mode) to obtain abundance estimates.
@@ -414,7 +446,7 @@ with other \nab methods as well.
 
 To measure the variation in quantification about a single random instance of simulated data (i.e., data generated 
 with a particular random seed), we have also generated five different simulated RNA-seq datasets by passing 
-different seeds to Polyester. To minimize external variation, we used the least mutated transcriptome 
+different seeds to \polyester. To minimize external variation, we used the least mutated transcriptome 
 (rate 0.01) as reference. By plotting the spearman correlations, as shown in~\cref{fig:random_samples}, 
 we observe that, given that all the tools perform well on the random samples, the performance of \sla is grouped 
 with the alignment-based methods, such as \bt and \STAR.  Further, the variation in quantification performance of 
@@ -424,7 +456,7 @@ all methods (i.e. the standared error) across these different simulated replicat
 \begin{center}
 \begin{tabular} {c|c c c c c}
 \toprule
-  Mutation Rate & Kallisto & Hera & Selective Alignment & STAR-Salmon &Bowtie2-Salmon \\
+  Mutation Rate & \kallisto & \hera & \Sla & \st-\salmon & \bt-\salmon \\
 \midrule
   0.01 & 0.906 & 0.935 & \textbf{0.946} & 0.942 & \textbf{0.948} \\
   0.02 & 0.871 & 0.925 & \textbf{0.942} & 0.939 & \textbf{0.945} \\
@@ -446,7 +478,7 @@ all methods (i.e. the standared error) across these different simulated replicat
 \begin{center}
 \begin{tabular} {c|c c c c c}
 \toprule
-Mutation Rate & Kallisto & Hera & Selective Alignment & STAR-Salmon &Bowtie2-Salmon \\
+Mutation Rate & \kallisto & \hera & \sla & \st-\salmon & \bt-\salmon \\
 \midrule
   0.01 & 0.161 & 0.116 & \textbf{0.100} & 0.104 & \textbf{0.096}\\
   0.02 & 0.193 & 0.132 & 0.108 & 0.109 & \textbf{0.100}\\
@@ -542,7 +574,7 @@ Method &time (s) & memory (KB) \\
 \caption[Comparison of timing and memory foot-print of \sla with other alignment and non-alignment methods]
 {Comparison of timing and memory foot-print of \sla with other alignment and non-alignment methods 
 on experimental sample SRR1215996. The timing performance for \STAR and \bt is the sum of mapping 
-and quantification (with salmon) steps (first number is the mapping step) and memory footprint is 
+and quantification (with \salmon) steps (first number is the mapping step) and memory footprint is 
 the max memory footprint of these two steps (first number is for the mapping step).\\}
 \label{tab:experimental_timing}
 \end{table}
@@ -572,10 +604,12 @@ properly handle edge cases, such as soft clipping. The \sla algorithm currently 
 distance threshold for filtering spurious reads. A more data-driven choice of filter can lead to a more resilient 
 threshold that can perform gracefully while handling both adversarial reads as well as high-quality reads in 
 heterogeneous read samples. In high quality samples, the edit distance bound can be set lower to further 
-speed-up the algorithm. Future work will also include support for reporting the actual CIGAR strings for 
+speed-up the algorithm. Future work will also include support for reporting the actual \texttt{CIGAR} strings for 
 applications that require this information, such as RNA-seq based variant calling or allele identification.
 
+
 \section[Puffaligner]{Puffaligner: An efficient and accurate aligner based on the pufferfish index}
+\label{puffal}
 Short-read aligners are a major workhorse of modern genomics. Given the importance of the alignment problem, 
 a tremendous number of different tools have been developed to tackle this problem. Some widely used examples are
 \bwa~\citep{bwa}, \bt~\citep{bowtie2}, \hisat~\citep{hisat,hisat2} and \st~\citep{Dobin2013Star}.
@@ -594,10 +628,10 @@ mashmap~\citep{Jain2018} and minimap2~\citep{minimap2}.
 
 Recently, a set of new indices for storing \kmers have been proposed based on graphs, specifically \dbgs (\dbgshort). 
 A \dbg is a graph over a set of distinct \kmers where each edge connects two neighboring \kmers
-that appear consequently in a reference sequence and therefore, overlap on ``$k-1$'' bases. \kallisto~\citep{kallisto}, 
-\debga~\citep{debga}, BGreat~\citep{bgreat}, \brownie~\citep{brownie}, and \pufferfish~\citep{pufferfish} are some
+that appear consequently in a reference sequence and therefore, overlap on ``$k-1$'' bases. \Kallisto~\citep{kallisto}, 
+\debga~\citep{debga}, \bgreat~\citep{bgreat}, \brownie~\citep{brownie}, and \pufferfish~\citep{pufferfish} are some
 tools which use an index constructed over the \dbg built from the reference sequences. 
-Cortex~\citep{cortex}, Vari~\citep{vari}, rainbowfish~\citep{rainbowfish}, and mantis~\citep{mantis} are also tools
+\cortex~\citep{cortex}, \vari~\citep{vari}, \rainbowfish~\citep{rainbowfish}, and \mantis~\citep{mantis} are also tools
 that use a \ccdbg for building their index over a set of raw experiments. All these approaches cover a wide range 
 of the possible design space, and different design decisions yield different performance tradeoffs.
 
@@ -678,7 +712,7 @@ found. Once a match is discovered, it is extended in both query and the referenc
 until one of these termination conditions occur: (1) a mismatch is encountered, 
 (2) the end of the query is reached, or (3) the end of the
 \unitig is reached. This process results in a \unimem match shared
-between the query and reference. \unimems where extension is terminated
+between the query and reference. \Unimems where extension is terminated
 as a result of reaching the end of a \unitig must later be 
 examined and potentially ``collpased'' together to form MEMs with respect
 to the references on which they appear. If the \unimem extension is not
@@ -925,7 +959,20 @@ reported. The value of $\tau$ is controlled by the option
 By only aligning the read's sub-sequences that are not included in the \mems, the size of alignment problems being solved in \puffaligner are often much shorter than the length of the read. However, to further speed up alignment, we also incorporate a number of other techniques to improve the performance of the alignment calculation. We describe the most important of these below:
 
 \begin{itemize}
-    \item \textbf{Skipping alignment calculation by recognizing perfect chains and alignment caching:} It is possible to avoid the alignment computation completely in a considerable number of cases. In fact, as has been explained in previous work~\citep{selaln}, the alignment calculation step can be completely skipped if the set of exact matches for each chain covers the whole read. \puffaligner skips alignment for cases where the coverage score of chains of \mems is the length of the read, and assigns a total matched CIGAR string for that alignment. Alignment computation of a read might be also skipped if the same alignment problem has been already detected and computed for this read. For example, in the case of RNA seq data, reads often map to the same exons on different transcripts. In such cases, each alignment solution for a read is stored in a cache (a hash table) so that if the same alignment problem is detected, the solution can be directly retrieved from the cache, and no further computation is required (see~\cref{tab:skipped-alignments}).
+    \item \textbf{Skipping alignment calculation by recognizing perfect chains 
+    and alignment caching:} 
+    It is possible to avoid the alignment computation completely in a considerable number of 
+    cases. In fact, as has been explained in previous work~\citep{selaln}, the alignment 
+    calculation step can be completely skipped if the set of exact matches for each chain 
+    covers the whole read. \puffaligner skips alignment for cases where the coverage score 
+    of chains of \mems is the length of the read, and assigns a total matched \texttt{CIGAR} string 
+    for that alignment. Alignment computation of a read might be also skipped if the same 
+    alignment problem has been already detected and computed for this read. For example, 
+    in the case of RNA seq data, reads often map to the same exons on different transcripts. 
+    In such cases, each alignment solution for a read is stored in a cache (a hash table) so 
+    that if the same alignment problem is detected, the solution can be directly retrieved from 
+    the cache, and no further computation is required (see~\cref{tab:skipped-alignments}).
+
 
     \begin{table}%[h!]
     \centering
@@ -942,7 +989,8 @@ By only aligning the read's sub-sequences that are not included in the \mems, th
     \end{table}
 
     %As noted in table (tab:skipped-alignments) up to 75 percent of alignment companions is skipped by considering the perfect chains and the alignment cache.
-    \item \textbf{Early stopping of the alignment computation when a valid score cannot be achieved:} While care is taken to produce only high-scoring chains between the read and reference, it is nonetheless the case that the majority of the chains do not lead to an alignment of acceptable quality. Since the minimum acceptable alignment score is immediately known based on $\tau$ and the length of the read, the base-to-base alignment calculation can be terminated at any point where it becomes imposible for the minimum required alignment score to be obtained. This approach can be applied both during the \ksw alignment calculation, and also after the alignment calculation of each gap is completed. During this procedure, for each base at position $i$, starting from position $1$ on the read of length $n$, if the best alignment score $p$ up to the $i$-th position is $s_i$, we can calculate the maximum possible alignment score, $s_{max}$, that might be achieved starting at this location given the current alignment score by:
+    \item \textbf{Early stopping of the alignment computation when a valid score cannot be achieved:} While care is taken to produce only high-scoring chains between the read and reference, it is nonetheless the case that the majority of the chains do not lead to an alignment of acceptable quality. Since the minimum acceptable alignment score is immediately known based on $\tau$ and the length of the read, the base-to-base alignment calculation can be terminated at any point where it becomes imposible for the minimum required alignment score to be obtained. This approach can be applied both during the \ksw alignment calculation, and also after the alignment calculation of each gap is completed. 
+    During this procedure, for each base at position $i$, starting from position $1$ on the read of length $n$, if the best alignment score $p$ up to the $i$-th position is $s_i$, we can calculate the maximum possible alignment score, $s_{max}$, that might be achieved starting at this location given the current alignment score by:
     \begin{equation}
         s_{max} = s_i + MS * (n - s_i),
     \end{equation}
@@ -1007,7 +1055,7 @@ series of experiments using both simulated and experimental data from different 
 \puffaligner with \bt~\citep{bowtie2}, \st~\citep{Dobin2013Star} and \debga~\citep{debga}. \bt is a popular, sensitive 
 and accurate aligner with the benefit of having very modest memory requirements. \st requires a much larger 
 amount of memory, but is much faster than \bt and can also perform ``spliced alignment" against a reference 
-(which \puffaligner, \bt, and \debga currently do not allow). \debga, is most-related tool to \puffaligner 
+(which \puffaligner, \bt, and \debga currently do not allow). \Ddebga, is most-related tool to \puffaligner 
 conceptually, as it is an aligner with a \ccdbg-based index that is focused on exploiting redundancy in the 
 reference sequence.
 
@@ -1239,8 +1287,8 @@ development of efficient methods for producing accurate transcriptome alignments
 topic of interest. In this section, we compare the effect of alignments produced by each tool on the accuracy 
 of RNA-seq abundance estimation.  
 
-We generated \num{9968245} paired-end RNA-seq reads using the polyester~\citep{polyester} read simulator. 
-The reads are generated by the \conf{simulate experiment countmat} module in polyester.
+We generated \num{9968245} paired-end RNA-seq reads using the \polyester~\citep{polyester} simulator. 
+The reads are generated by the \conf{simulate experiment countmat} module in \polyester.
 The input count matrix is calculated based on the estimates from the \bt-\salmon pipeline on the sample 
 \texttt{SRR1085674} (where reads are first aligned with \bt and then the alignments are quantified using 
 \salmon). This sample is a collection of paired-end RNA-seq reads sequenced from human transcriptome using 
@@ -1294,13 +1342,13 @@ unspliced manner. We chose to run \st in the transcriptomic mode as well, since 
 accuracy, though this increases the running time of \st.
 
 The \debga index is built on the transcriptome, as are the \bt and \puffaligner indices, since these tools 
-do not support spliced read alignment. \debga is run in the with options \conf{-o 200 -x 200}, which nominally 
+do not support spliced read alignment. \Ddebga is run in the with options \conf{-o 200 -x 200}, which nominally 
 has the same effect as \conf{-k 200} in \bt, according to the documentation of \debga.
 
 Accuracy of abundance estimation by \salmon, when provided the SAM output generated by each aligner, is 
 displayed in~\cref{Tab:rnaseq-quant}. The timing and memory benchmarks provided in this table is only for the 
 alignment step. Alignments produced by \puffaligner, \bt and \st in the transcriptomic mode produce the best 
-abundance estimates. \debga's output alignments are not suitable for any abundance estimation as many reads 
+abundance estimates. \Ddebga's output alignments are not suitable for any abundance estimation as many reads 
 are aligned only to the same strand which are later filtered during the abundance estimation by \salmon, so 
 we could not provide a meaningful correlations for abundance estimation using \debga's alignments.
 Aligning the reads by \st to genome and then projecting to transcriptomic coordinates does not generate as 
@@ -1333,7 +1381,7 @@ fragment; 1 (primary output with highest score, breaking ties randomly), 20, and
 \puffaligner and \st, as the only tools that support this option, also are run in the \emph{bestStrata} mode.
 In this mode, the aligner outputs all \emph{equally-best} alignments for a read with highest score without the 
 limitation on number of reported alignments. This option is inspired by the similarly-named option in 
-Bowtie1~\citep{langmead2010aligning}. However, unlike Bowtie1, \puffaligner and \st only make a best-effort 
+\btie~\citep{langmead2010aligning}. However, unlike \btie, \puffaligner and \st only make a best-effort 
 attempt to find the score of the best stratum alignments, and do not guarantee to find the best stratum 
 (though the cases in which they fail to seem to be exceedingly rare). This option is especially useful in 
 the metagenomic analyses, as we will report only the best-score alignments without having an arbitrary 
@@ -1765,7 +1813,7 @@ We compared the accuracy and efficiency of \puffaligner against two
 widely-used alignment tools, \bt and \st, that perform unspliced and
 (optionally) spliced alignments of reads, respectively. We also compare
 the results against \debga, an aligner that also utilizes an index built
-over the compacted \dbg.
+over the \dbg.
 
 We analyze the performance of these tools on both simulated and
 experimental DNA and RNA sequencing datasets. The accuracy of
