@@ -109,10 +109,15 @@ In the following sections of this chapter I review the existing tools which
 are widely used for alignment (computing the edit distance of the reads to 
 the reference sequences) and quantification (estimating the expression ratio 
 of the isoforms) of RNA-seq samples. Both of these steps greatly affect the 
-accuracy of the downstream analysis in RNA-seq 
-pipelines~\citep{srivastava2019alignment}. In chapter 2, 
-we present a fast mapping technique called \sla~\citep{selaln}. This technique is built 
-alongside \qm to achieve a higher sensitivity that results in more 
+accuracy of the downstream analysis in RNA-seq pipelines~\citep{srivastava2019alignment}. 
+Qunatification of RNA-seq data is a very challenging task due to a high degree of
+multimapping~\citep{van2019rna}. Accurate RNA-seq abundance estimations are essential for detecting
+differentially expressed genes and transcripts. It has been shown that 
+disease-associated transcriptomic alterations can be studied with precise abundance estimation
+at the transcript level~\citep{dick2020differential}.
+
+In chapter 2, we present a fast mapping technique called \sla~\citep{selaln}. 
+This technique is built alongside \qm to achieve a higher sensitivity that results in more 
 accurate abundance estimates. Chapter 2 also introduces a new tool for 
 computing alignment of DNA-seq and RNA-seq reads to known reference sequences. 
 In chapter 3, an improved factorization of the quantification likelihood 
@@ -788,5 +793,32 @@ therefore, sampling the \eqc counts instead of each individual read improves the
 of the \boots. \Pboots is also another way of generating \boot replicates by sampling the 
 positions where the reads map to on each transcript~\citep{xiong2016probabilistic}.
 Furthermore, the RNA-seq quantification tool, \salmon~\citep{salmon} also includes a \gibbs
-procedure for estimating the posterior distribution.  Bitseq~\citep{glaus2012identifying} 
+procedure for estimating the posterior distribution. \bitseq~\citep{glaus2012identifying} 
 applies a MCMC \gib sampler to generate samples from the posterior probabilty distribution. 
+
+\section{Overview of the document and contribution}
+In the first chapter, I discussed about some of the main important computational steps
+for analysis of RNA-seq data including alignment and quantification.
+In chapter 2, novel methods are presented for improving the accuracy and efficiency of 
+short read mapping. More specifically, I have contributed in development 
+of \sla~\citep{selaln} which improves
+the accuracy of lightweight mapping without a significant effect on their efficiency.
+Furthermore,  \puffaligner~\citep{almodaresi2021puffaligner} 
+will be discussed in chapter 2 which is an accurate aligner for short reads
+to a set of references which maintains a moderate memory usage while being very fast.
+In chapter 3, I present an improved factorization of the RNA-seq likelihood~\citep{ddfact} 
+which bridges the accuracy gap between the approximate and full models and has almost 
+no effect on the efficiency of fast RNA-seq quantification approaches.
+In chapter 4, I attempt to improve the uncertainty estimation of RNA-seq quantification by 
+introdcing the augmented Bootstrap. More particularly, I will discuss how this approach 
+improves estimating the posterior distrubtion of abudance estimation of allelic expressions.
+
+% \textbf{Contributions:}
+% \begin{description}
+%   \item[$\bullet$~\cref{chapt2}] I present two main papers. The first one is \sla~\citep{selaln} which
+%   is a joint work with Hirak Sarkar. We both contributed equally in design, coding and writing. 
+%   In the second part of the chapter, I prsent \puffaligner~\citep{almodaresi2021puffaligner} which
+%   is a joint work with Fatemeh Almodaresi. We both contirbuted equally in coding, design and writing.
+%   \item[$\bullet$~\cref{chapt3}] I present
+%   \item[$\bullet$~\cref{chapt4}] 
+% \end{description}
